@@ -164,21 +164,14 @@ router.post("/sessions/sign-attendance", (req, res) => {
 
 ### **2. Generating a Barcode**
 ```js
-import bwipjs from 'bwip-js';
-router.get('/generate-barcode', (req, res) => {
-  const { sessionId } = req.query;
-  bwipjs.toBuffer({
-    bcid: 'code128',
-    text: sessionId,
-    scale: 3,
-    height: 10,
-    includetext: true
-  }, (err, png) => {
-    if (err) return res.status(500).send('Barcode error');
-    res.setHeader('Content-Type', 'image/png');
-    res.send(png);
-  });
-});
+const canvas = document.getElementById('previewCanvas');
+JsBarcode(canvas, matricNumber, {
+         format: "CODE128",
+         width: 3,
+         height: 50,
+         displayValue: true,
+       });
+
 ```
 
 ---
