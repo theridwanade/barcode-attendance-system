@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Attendance</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+    <style>
+      .video-container {
+        position: relative;
+        width: 100%;
+        max-width: 300px;
+        height: 250px;
+        margin: 0 auto;
+        background-color: #000;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #interactive {
+        width: 100%;
+        height: 100%;
+      }
+      #interactive video {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+      }
+      .scan-record {
+        margin-top: 1rem;
+        padding: 0.5rem;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="bg-primary text-white py-3">
+      <div class="container">
+        <h1 class="h3 mb-0">Sign Attendance</h1>
+      </div>
+      <% if (error) { %>
+      <p style="color: red" class="text-center"><%= error %></p>
+      <% } %>
+    </header>
+
+    <main class="container my-5">
+      <div class="row g-4">
+        <!-- Barcode Scanner Section -->
+        <section class="col-md-5">
+          <div class="card">
+            <div class="card-header">Barcode Scanner</div>
+            <div class="card-body">
+              <div id="scanner-container" class="video-container d-none">
+                <div id="interactive" class="viewport"></div>
+              </div>
+              <div
+                id="no-session-alert"
+                class="alert alert-warning mb-0 d-none"
+              >
+                Please select a session to activate the scanner.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Submission Status Section -->
+        <section class="col-md-7">
+          <div class="card">
+            <div class="card-header">Submission Status</div>
+            <div class="card-body">
+              <% if (sessions && sessions.length > 0) { %>
+                <div class="mb-3">
+                  <select class="form-select" id="course-code" name="courseCode" required>
+                    <option value="" disabled selected>Select session</option>
+                    <% sessions.forEach((course) => { %>
+                      <option value="<%= course.courseCode %>"><%= course.courseCode %></option>
+                    <% }) %>
+                  </select>
+                </div>
+                <p id="statusMessage" class="mb-2">Select a session to begin scanning</p>
+              <% } else { %>
+                <div class="alert alert-info">
+                  <p>No active sessions available at the moment.</p>
+                  <p>Check back later or contact the administrator.</p>
+                </div>
+              <% } %>
+              <div id="status-area">
+                <p id="statusMessage" class="mb-2">
+                  Select a session to begin scanning
+                </p>
+                <div id="scan-records"></div>
+                <div id="server-response"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script>
+      const courseSelect = document.getElementById("course-code");
+      const scannerContainer = document.getElementById("scanner-container");
+      const noSessionAlert = document.getElementById("no-session-alert");
+      const statusMessage = document.getElementById("statusMessage");
+      const scanRecords = document.getElementById("scan-records");
+      const serverResponse = document.getElementById("server-response");
+
+      // State management
+      let isQuaggaRunning = false;
+      let lastScanTime = 0;
+      const scanInterval = 2400; // 2.4 seconds = 25 scans/minute
+      let scannedMatricNumbers = new Set(
+        JSON.parse(sessionStorage.getItem("scannedMatric") || "[]")
+      );
+      let currentSession = null;
+
+      const config = {
+        inputStream: {
+          name: "Live",
+          type: "LiveStream",
+          target: document.getElementById("interactive"),
+          constraints: { facingMode: "environment" },
+          area: { top: "0%", right: "0%", left: "0%", bottom: "0%" },
+        },
+        decoder: {
+          readers: [
+            "ean_reader",
+            "ean_8_reader",
+            "code_39_reader",
+            "code_128_reader",
+            "upc_reader",
+            "upc_e_reader",
+            "codabar_reader",
+          ],
+        },
+        locate: true,
+      };
+
+      // Session selection handler
+      courseSelect.addEventListener("change", function () {
+        const selectedSession = this.value;
+        currentSession = selectedSession;
+        scannedMatricNumbers = new Set(
+          JSON.parse(
+            sessionStorage.getItem(`scanned-${selectedSession}`) || "[]"
+          )
+        );
+
+        if (selectedSession) {
+          noSessionAlert.classList.add("d-none");
+          initializeScanner();
+        } else {
+          stopScanner();
+          noSessionAlert.classList.remove("d-none");
+          scannerContainer.classList.add("d-none");
+        }
+      });
+
+      // Scanner management with rate limiting
+      function initializeScanner() {
+        if (isQuaggaRunning) return;
+
+        Quagga.init(config, (err) => {
+          if (err) {
+            console.error("Quagga init error:", err);
+            statusMessage.textContent = "Error initializing scanner";
+            return;
+          }
+          Quagga.start();
+          isQuaggaRunning = true;
+          scannerContainer.classList.remove("d-none");
+          statusMessage.textContent = "Ready to scan...";
+        });
+      }
+
+      function stopScanner() {
+        if (isQuaggaRunning) {
+          Quagga.stop();
+          isQuaggaRunning = false;
+          scannerContainer.classList.add("d-none");
+        }
+      }
+
+      // Enhanced barcode detection handler
+      Quagga.onDetected((result) => {
+        const now = Date.now();
+        const matricNumber = result.codeResult.code;
+
+        if (!currentSession) return;
+
+        // Rate limiting check
+        if (now - lastScanTime < scanInterval) {
+          statusMessage.textContent = "Scanning too fast. Please wait...";
+          setTimeout(() => {
+            statusMessage.textContent =
+              scannedMatricNumbers.size > 0
+                ? `Ready to scan (${scannedMatricNumbers.size} recorded)`
+                : "Ready to scan...";
+          }, 1000);
+          return;
+        }
+
+        // Duplicate check
+        if (scannedMatricNumbers.has(matricNumber)) {
+          statusMessage.textContent = "Already scanned this student";
+          return;
+        }
+
+        lastScanTime = now;
+        statusMessage.textContent = "Processing scan...";
+
+        // Store immediately to prevent duplicates
+        scannedMatricNumbers.add(matricNumber);
+        sessionStorage.setItem(
+          `scanned-${currentSession}`,
+          JSON.stringify([...scannedMatricNumbers])
+        );
+
+        // Display scan record
+        const recordElement = document.createElement("div");
+        recordElement.className = "scan-record";
+        recordElement.innerHTML = `
+        <strong>Session:</strong> ${currentSession}<br>
+        <strong>Matric No:</strong> ${matricNumber}
+      `;
+        scanRecords.prepend(recordElement);
+
+        // Server communication
+        signAttendance({
+          courseCode: currentSession,
+          matricNumber: matricNumber,
+        });
+      });
+
+      // Optimized server communication
+      async function signAttendance(scanData) {
+        try {
+          const response = await fetch("/sessions/sign-attendance", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(scanData),
+          });
+
+          if (!response.ok) {
+            throw new Error(`Server responded with status: ${response.status}`);
+          }
+
+          const result = await response.json();
+
+          serverResponse.innerHTML = `
+      <div class="alert alert-${result.success ? "success" : "danger"} mt-2">
+        ${result.message}
+      </div>
+    `;
+
+          if (!result.success) {
+            // Remove from scanned set if failed
+            scannedMatricNumbers.delete(scanData.matricNumber);
+            sessionStorage.setItem(
+              `scanned-${currentSession}`,
+              JSON.stringify([...scannedMatricNumbers])
+            );
+          }
+        } catch (error) {
+          console.error("Error communicating with server:", error);
+          serverResponse.innerHTML = `
+      <div class="alert alert-danger mt-2">
+        Failed to record attendance. Please try again.
+      </div>
+    `;
+        }
+      }
+
+      // Cleanup
+      window.addEventListener("unload", () => {
+        stopScanner();
+        sessionStorage.removeItem(`scanned-${currentSession}`);
+      });
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

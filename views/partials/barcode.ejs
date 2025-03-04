@@ -1,0 +1,92 @@
+<script>
+ let studentName = "";
+ let matricNumber = "";
+
+ document.getElementById('studentForm').addEventListener('submit', function(e) {
+   e.preventDefault();  // Prevent the default form submission
+   
+   // Create a new FormData object
+   const formData = new FormData(this);
+
+   // Manually collect the selected courses
+   const selectedCourses = [];
+   const courseCheckboxes = document.querySelectorAll('input[name="courses"]:checked');
+   courseCheckboxes.forEach(checkbox => {
+     selectedCourses.push(checkbox.value);
+   });
+
+   // Convert FormData into a plain object for easy inspection
+   const dataObject = {};
+   formData.forEach((value, key) => {
+     if (Array.isArray(dataObject[key])) {
+       dataObject[key].push(value);
+     } else if (dataObject[key]) {
+       dataObject[key] = [dataObject[key], value];
+     } else {
+       dataObject[key] = value;
+     }
+   });
+
+   // Send data to server using Fetch API
+   fetch('/student/create', {
+     method: 'POST',
+     body: formData
+   })
+   .then(response => response.json()) // Assuming the server responds with JSON
+   .then(data => {
+     if (data.success) {
+       // If the data was saved successfully, generate and display the barcode
+       matricNumber = data.matricNumber;  // Assuming the server sends the matric number back
+       studentName = data.name; // Store the student name
+       
+       // Draw the ID card on the canvas
+       const canvas = document.getElementById('previewCanvas');
+       const ctx = canvas.getContext('2d');
+       ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous drawings
+       
+       // Draw the ID card background
+       ctx.fillStyle = "#4CAF50";
+       ctx.fillRect(0, 0, canvas.width, canvas.height);
+       
+       // Draw student name
+       ctx.fillStyle = "#FFFFFF";
+       ctx.font = "20px Arial";
+       ctx.fillText(`Name: ${studentName}`, 20, 40);
+       
+       // Draw matric number
+       ctx.fillText(`Matric: ${matricNumber}`, 20, 80);
+       
+       // Generate barcode for matric number
+       JsBarcode(canvas, matricNumber, {
+         format: "CODE128",
+         width: 3,
+         height: 50,
+         displayValue: true,
+       });
+
+       // Enable the download button
+       document.getElementById("downloadBtn").disabled = false;
+     } else {
+       alert('Failed to save student data');
+     }
+   })
+   .catch(error => {
+     console.error('Error:', error);
+     alert('An error occurred');
+   });
+ });
+
+ // Download PDF when button is clicked
+ document.getElementById('downloadBtn').addEventListener('click', function() {
+   const { jsPDF } = window.jspdf;
+   const doc = new jsPDF();
+   
+   // Add the student ID card image (canvas) to the PDF
+   const canvas = document.getElementById('previewCanvas');
+   const imgData = canvas.toDataURL("image/png");
+   doc.addImage(imgData, 'PNG', 10, 10, 180, 100);
+   
+   // Save the PDF with a custom name
+   doc.save(`${studentName}_${matricNumber}_id_card.pdf`);
+ });
+</script>
