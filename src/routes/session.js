@@ -138,7 +138,7 @@ router.get("/sessions/attendance", (req, res) => {
         sessions: null
       });
     }
-    return res.render("attendance", { sessions: rows });
+    return res.render("attendance", { sessions: rows, error: null });
   });
 });
 
