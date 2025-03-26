@@ -74,6 +74,11 @@ function startServer(app, PORT) {
     console.log(`Server listening at http://localhost:${PORT}`);
   });
 }
+
+app.get("/", (req, res) => {
+  res.redirect("/admin");
+})
+
 /**
  * 
  * @param {express.Application} app - The express app instance.

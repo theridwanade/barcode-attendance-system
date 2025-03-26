@@ -24,7 +24,7 @@ const migratedb = async () => {
     await new Promise((resolve, reject) => {
       db.run(
         `INSERT INTO admin (username, password)
-         SELECT "admin", "admin123"
+         SELECT "admin", "root"
          WHERE NOT EXISTS (SELECT 1 FROM admin WHERE username = "admin")`,
         (err) => {
           if (err) {
