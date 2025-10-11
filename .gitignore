@@ -35,6 +35,7 @@ yarn-error.log*
 
 # vercel
 .vercel
+.github/copilot-instructions.md
 
 # typescript
 *.tsbuildinfo
