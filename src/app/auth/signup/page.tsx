@@ -15,6 +15,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import GoogleLogin from "../google/GoogleLogin";
+import Loading from "@/components/loading";
+import { useSignUp } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -22,12 +25,100 @@ const Signup = () => {
     email: "",
     password: "",
   });
+  const { isLoaded, signUp, setActive } = useSignUp();
+   const [verifying, setVerifying] = useState(false);
+   const [verificationCode, setVerificationCode] = useState("");
+   const router = useRouter();
 
-  const handleSignUp = (e: FormEvent) => {
+  const handleSubmit = async  (e: FormEvent) => {
     e.preventDefault();
-    // Handle signup logic here
-    console.log("Signing up with data:", formData);
+    if(!isLoaded) {
+      return (<Loading />)
+    }
+
+    try {
+      await signUp.create({
+        emailAddress: formData.email,
+        password: formData.password,
+        username: formData.username,
+      })
+
+      await signUp.prepareEmailAddressVerification({ 
+        strategy: "email_code" 
+      });
+
+      setVerifying(true);
+    } catch (error) {
+      console.error("Error signing up:", error);
+    }
   };
+  
+  const handleVerify = async (e: FormEvent) => {
+    e.preventDefault();
+    
+    if(!isLoaded) {
+      return (<Loading />)
+    }
+
+    try {
+      const signUpAttempt = await signUp.attemptEmailAddressVerification({
+        code: verificationCode,
+      })
+
+      if(signUpAttempt.status === "complete") {
+        await setActive({
+          session: signUpAttempt.createdSessionId,
+          navigate: async () => {
+            router.push("/");
+            return
+          }
+
+        })
+      } else {
+        console.error("Sign-up attempt not complete:", signUpAttempt);
+        console.error("Sign-up attempt status:", signUpAttempt.status);
+      }
+    } catch (error) {
+      console.error(JSON.stringify(error, null, 2));
+    }
+  }
+
+  if (verifying) {
+    return (
+      <main className={"flex justify-center items-center h-screen"}>
+        <Card className="w-full max-w-sm">
+          <CardHeader>
+            <CardTitle>Verify your email</CardTitle>
+            <CardDescription>
+              Enter the verification code sent to your email
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form>
+              <div className="grid gap-2">
+                <Label htmlFor="verificationCode">Verification Code</Label>
+                <Input
+                  id="verificationCode"
+                  type="text"
+                  placeholder="123456"
+                  required
+                  value={verificationCode}
+                  onChange={(e) =>
+                    setVerificationCode(e.target.value)
+                  }
+                />
+              </div>
+            </form>
+          </CardContent>
+          <CardFooter>
+            <Button type="submit" onClick={handleVerify} className="w-full">
+              Verify
+            </Button>
+          </CardFooter>
+        </Card>
+      </main>
+    )
+  }
 
   return (
     <main className={"flex justify-center items-center h-screen"}>
@@ -93,7 +184,7 @@ const Signup = () => {
           </form>
         </CardContent>
         <CardFooter className="flex-col gap-2">
-          <Button type="submit" onClick={handleSignUp} className="w-full">
+          <Button type="submit" onClick={handleSubmit} className="w-full">
             Signup
           </Button>
           <GoogleLogin />
