@@ -23,5 +23,5 @@ const EventCard = () => {
       </CardHeader>
     </Card>
   );
-}
-export default EventCard
+};
+export default EventCard;

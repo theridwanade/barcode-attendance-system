@@ -6,6 +6,6 @@ const GoogleLogin = () => {
       Login with Google
     </Button>
   );
-}
+};
 
-export default GoogleLogin
+export default GoogleLogin;

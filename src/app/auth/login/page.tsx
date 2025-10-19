@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import GoogleLogin from "../google/GoogleLogin";
 
-const LoginPage = () =>{ 
+const LoginPage = () => {
   return (
     <main className={"flex justify-center items-center h-screen"}>
       <Card className="w-full max-w-sm">
@@ -62,11 +62,11 @@ const LoginPage = () =>{
           <Button type="submit" className="w-full">
             Login
           </Button>
-         <GoogleLogin />
+          <GoogleLogin />
         </CardFooter>
       </Card>
     </main>
   );
-}
+};
 
 export default LoginPage;

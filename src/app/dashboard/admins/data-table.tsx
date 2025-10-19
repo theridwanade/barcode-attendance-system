@@ -59,7 +59,7 @@ export const DataTable = <TData, TValue>({
     <div>
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter contacts..."
+          placeholder="Filter Admins..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(even) =>
             table.getColumn("name")?.setFilterValue(even.target.value)
