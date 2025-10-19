@@ -1,3 +1,7 @@
+"use client";
+
+import Link from "next/link";
+import { type FormEvent, useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -10,10 +14,21 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import Link from "next/link";
 import GoogleLogin from "../google/GoogleLogin";
 
 const Signup = () => {
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+  });
+
+  const handleSignUp = (e: FormEvent) => {
+    e.preventDefault();
+    // Handle signup logic here
+    console.log("Signing up with data:", formData);
+  };
+
   return (
     <main className={"flex justify-center items-center h-screen"}>
       <Card className="w-full max-w-sm">
@@ -41,6 +56,10 @@ const Signup = () => {
                   type="username"
                   placeholder="mm"
                   required
+                  value={formData.username}
+                  onChange={(e) =>
+                    setFormData({ ...formData, username: e.target.value })
+                  }
                 />
               </div>
               <div className="grid gap-2">
@@ -50,19 +69,31 @@ const Signup = () => {
                   type="email"
                   placeholder="m@example.com"
                   required
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
                 />
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                 </div>
-                <Input id="password" type="password" required />
+                <Input
+                  id="password"
+                  type="password"
+                  required
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
+                />
               </div>
             </div>
           </form>
         </CardContent>
         <CardFooter className="flex-col gap-2">
-          <Button type="submit" className="w-full">
+          <Button type="submit" onClick={handleSignUp} className="w-full">
             Signup
           </Button>
           <GoogleLogin />
