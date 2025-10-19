@@ -40,7 +40,6 @@ const Signup = () => {
       await signUp.create({
         emailAddress: formData.email,
         password: formData.password,
-        username: formData.username,
       })
 
       await signUp.prepareEmailAddressVerification({ 
