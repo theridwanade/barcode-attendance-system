@@ -1,6 +1,10 @@
 "use client";
 
-import type { ColumnDef, ColumnFiltersState, SortingState } from "@tanstack/react-table";
+import type {
+  ColumnDef,
+  ColumnFiltersState,
+  SortingState,
+} from "@tanstack/react-table";
 import {
   flexRender,
   getCoreRowModel,
@@ -32,6 +36,7 @@ export const DataTable = <TData, TValue>({
 }: DataTableProps<TData, TValue>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [rowSelection, setRowSelection] = useState({});
 
   const table = useReactTable({
     data,
@@ -42,24 +47,26 @@ export const DataTable = <TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
+    onRowSelectionChange: setRowSelection,
     state: {
       sorting,
       columnFilters,
+      rowSelection,
     },
   });
 
   return (
     <div>
-        <div className="flex items-center py-4">
-            <Input 
-            placeholder="Filter contacts..."
-            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-            onChange={(even) =>
-                table.getColumn("name")?.setFilterValue(even.target.value)
-            }
-            className=""
-            />
-        </div>
+      <div className="flex items-center py-4">
+        <Input
+          placeholder="Filter contacts..."
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          onChange={(even) =>
+            table.getColumn("name")?.setFilterValue(even.target.value)
+          }
+          className=""
+        />
+      </div>
       <div className="overflow-hidden rounded-md border">
         <Table>
           <TableHeader>
@@ -110,23 +117,29 @@ export const DataTable = <TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant={"outline"}
-          size={"sm"}
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Previous
-        </Button>
-        <Button
-          variant={"outline"}
-          size={"sm"}
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Next
-        </Button>
+      <div className="flex items-center justify-between space-x-2 py-4">
+        <div className="text-muted-foreground flex-1 text-sm">
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
+        </div>
+        <div>
+          <Button
+            variant={"outline"}
+            size={"sm"}
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+          >
+            Previous
+          </Button>
+          <Button
+            variant={"outline"}
+            size={"sm"}
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next
+          </Button>
+        </div>
       </div>
     </div>
   );
