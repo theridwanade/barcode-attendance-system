@@ -1,5 +1,5 @@
+import { SignedIn, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { SignedIn,UserButton } from "@clerk/nextjs";
 import EventCard from "./eventCard";
 
 const Page = () => {
@@ -16,14 +16,13 @@ const Page = () => {
           <Button>Create Event</Button>
         </div>
         <div className="p-5 grid gap-5">
-            {
-             Array.from({length: 2}).map((_, index) => (
-                <EventCard key={index} />
-             ))
-            }
+          {Array.from({ length: 2 }).map((_, index) => (
+            // biome-ignore lint/suspicious/noArrayIndexKey: i don't know the fuck happening here, might figure it out later.
+            <EventCard key={index} />
+          ))}
         </div>
       </main>
     </>
   );
-}
-export default Page
+};
+export default Page;
