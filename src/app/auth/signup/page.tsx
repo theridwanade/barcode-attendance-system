@@ -18,6 +18,12 @@ import GoogleLogin from "../google/GoogleLogin";
 import Loading from "@/components/loading";
 import { useSignUp } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 
 const Signup = () => {
   const [formData, setFormData] = useState({
@@ -26,24 +32,24 @@ const Signup = () => {
     password: "",
   });
   const { isLoaded, signUp, setActive } = useSignUp();
-   const [verifying, setVerifying] = useState(false);
-   const [verificationCode, setVerificationCode] = useState("");
-   const router = useRouter();
+  const [verifying, setVerifying] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
+  const router = useRouter();
 
-  const handleSubmit = async  (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if(!isLoaded) {
-      return (<Loading />)
+    if (!isLoaded) {
+      return <Loading />;
     }
 
     try {
       await signUp.create({
         emailAddress: formData.email,
         password: formData.password,
-      })
+      });
 
-      await signUp.prepareEmailAddressVerification({ 
-        strategy: "email_code" 
+      await signUp.prepareEmailAddressVerification({
+        strategy: "email_code",
       });
 
       setVerifying(true);
@@ -51,28 +57,27 @@ const Signup = () => {
       console.error("Error signing up:", error);
     }
   };
-  
+
   const handleVerify = async (e: FormEvent) => {
     e.preventDefault();
-    
-    if(!isLoaded) {
-      return (<Loading />)
+
+    if (!isLoaded) {
+      return <Loading />;
     }
 
     try {
       const signUpAttempt = await signUp.attemptEmailAddressVerification({
         code: verificationCode,
-      })
+      });
 
-      if(signUpAttempt.status === "complete") {
+      if (signUpAttempt.status === "complete") {
         await setActive({
           session: signUpAttempt.createdSessionId,
           navigate: async () => {
             router.push("/");
-            return
-          }
-
-        })
+            return;
+          },
+        });
       } else {
         console.error("Sign-up attempt not complete:", signUpAttempt);
         console.error("Sign-up attempt status:", signUpAttempt.status);
@@ -80,7 +85,7 @@ const Signup = () => {
     } catch (error) {
       console.error(JSON.stringify(error, null, 2));
     }
-  }
+  };
 
   if (verifying) {
     return (
@@ -96,16 +101,27 @@ const Signup = () => {
             <form>
               <div className="grid gap-2">
                 <Label htmlFor="verificationCode">Verification Code</Label>
-                <Input
-                  id="verificationCode"
-                  type="text"
-                  placeholder="123456"
-                  required
-                  value={verificationCode}
-                  onChange={(e) =>
-                    setVerificationCode(e.target.value)
-                  }
-                />
+                <div className="w-full text-center justify-center flex">
+                  <InputOTP
+                    maxLength={6}
+                    onChange={(value) => setVerificationCode(value)}
+                  >
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                    </InputOTPGroup>
+                    <InputOTPSeparator />
+                    <InputOTPGroup>
+                      <InputOTPSlot index={2} />
+                      <InputOTPSlot index={3} />
+                    </InputOTPGroup>
+                    <InputOTPSeparator />
+                    <InputOTPGroup>
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
               </div>
             </form>
           </CardContent>
@@ -116,7 +132,7 @@ const Signup = () => {
           </CardFooter>
         </Card>
       </main>
-    )
+    );
   }
 
   return (
