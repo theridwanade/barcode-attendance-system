@@ -1,18 +1,17 @@
 "use client";
 
+import type { ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenu,
-  DropdownMenuContent,
 } from "@/components/ui/dropdown-menu";
-
-import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
 
 export type Contact = {
   id: string;
@@ -76,7 +75,7 @@ export const columns: ColumnDef<Contact>[] = [
   {
     id: "actions",
     cell: ({ row }) => {
-      const payment = row.original;
+      const contacts = row.original;
 
       return (
         <DropdownMenu>
@@ -90,13 +89,13 @@ export const columns: ColumnDef<Contact>[] = [
             <DropdownMenuLabel className="font-bold">Actions</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.email)}
+              onClick={() => navigator.clipboard.writeText(contacts.email)}
             >
               Copy Email
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.phone)}
+              onClick={() => navigator.clipboard.writeText(contacts.phone)}
             >
               Copy Phone
             </DropdownMenuItem>
