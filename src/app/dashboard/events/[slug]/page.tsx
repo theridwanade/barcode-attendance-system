@@ -56,6 +56,7 @@ const Page = async () => {
             <Button>Register Attendance</Button>
             <Button>Assign an Admin</Button>
             <Button>Invite Attendees</Button>
+            <Button variant={"destructive"}>Generate Report</Button>
           </div>
         </div>
         {/* Data table for attendance */}
