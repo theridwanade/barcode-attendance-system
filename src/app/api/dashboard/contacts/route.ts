@@ -8,6 +8,7 @@ export const GET = async () => {
   await connectToDatabase();
 
   const contacts = await Contacts.find();
+  console.log(contacts);
   const contactData = contacts.map((contact, index) => {
     return {
       id: index + 1,
