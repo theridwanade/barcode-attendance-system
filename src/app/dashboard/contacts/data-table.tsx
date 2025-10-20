@@ -122,7 +122,7 @@ export const DataTable = <TData, TValue>({
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div>
+        <div className="flex items-center space-x-4">
           <Button
             variant={"outline"}
             size={"sm"}
