@@ -4,8 +4,6 @@ import { columns } from "./columns";
 import { DataTable } from "./data-table";
 
 const getContactsData = async () => {
-  // Some i will fetch the data from here via api
-  // TODO: implement data fetching
   const response = await fetch(`${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/dashboard/contacts`);
 
   const data = await response.json();

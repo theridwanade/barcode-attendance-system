@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export type Contact = {
+export type ContactColumnType = {
   id: string;
   name: string;
   email: string;
@@ -21,7 +21,7 @@ export type Contact = {
   dateAdded: string;
 };
 
-export const columns: ColumnDef<Contact>[] = [
+export const columns: ColumnDef<ContactColumnType>[] = [
   {
     id: "select",
     header: ({ table }) => (
