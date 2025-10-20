@@ -126,7 +126,11 @@ const Signup = () => {
             </form>
           </CardContent>
           <CardFooter>
-            <Button type="submit" onClick={handleVerify} className="w-full">
+            <Button
+              type="submit"
+              onClick={handleVerify}
+              className="w-full cursor-pointer"
+            >
               Verify
             </Button>
           </CardFooter>
@@ -205,7 +209,11 @@ const Signup = () => {
           </form>
         </CardContent>
         <CardFooter className="flex-col gap-2">
-          <Button type="submit" onClick={handleSubmit} className="w-full">
+          <Button
+            type="submit"
+            onClick={handleSubmit}
+            className="w-full cursor-pointer"
+          >
             Signup
           </Button>
           <GoogleLogin />
