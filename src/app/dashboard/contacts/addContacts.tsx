@@ -30,8 +30,9 @@ const AddContacts = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    try {
 
-    setLoading(true);
+      setLoading(true);
     const response = await fetch("/api/dashboard/contacts/new", {
       method: "POST",
       headers: {
@@ -51,6 +52,11 @@ const AddContacts = () => {
 
     setLoading(false);
     close();
+    } catch (err) {
+      console.error("Failed to add contact:", err);
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <>
@@ -108,7 +114,7 @@ const AddContacts = () => {
                     />
                   </Field>
                   <Field>
-                    <Button type="submit" onClick={handleSubmit}>
+                    <Button type="submit" onClick={handleSubmit} disabled={loading}>
                       {loading ? <Spinner /> : "Save"}
                     </Button>
                   </Field>
