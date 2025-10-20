@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/card";
 import useModal from "@/hooks/useModal";
 import { Separator } from "@/components/ui/separator";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 
 const AddContacts = () => {
   const { open, close, Modal } = useModal();
@@ -25,30 +27,53 @@ const AddContacts = () => {
       <Button onClick={() => open()}>Add Contacts</Button>
 
       {/* Modal overlay */}
-   <Modal>
-    <Card>
-      <CardHeader className="flex items-center justify-between">
-        <CardTitle>Add New Contact</CardTitle>
-        <CardAction>
-          <Button onClick={() => close()} variant="ghost" size="icon">
-            <X />
-          </Button>
-        </CardAction>
-      </CardHeader>
-      <Separator />
-      <CardContent>
-        <p className="text-sm text-gray-600 mb-6">
-          Modal content goes here...
-        </p>
-        <div className="flex justify-end"></div>
-      </CardContent>
-      <CardFooter>
-        <Button onClick={() => close()}>
-          Save Contact
-        </Button>
-      </CardFooter>
-    </Card>
-   </Modal>
+      <Modal>
+        <Card>
+          <CardHeader className="flex items-center justify-between">
+            <CardTitle>Add New Contact</CardTitle>
+            <CardAction>
+              <Button onClick={() => close()} variant="ghost" size="icon">
+                <X />
+              </Button>
+            </CardAction>
+          </CardHeader>
+          <Separator />
+          <CardContent>
+            <div>
+              <form>
+                <FieldGroup>
+                  <Field>
+                    <FieldLabel htmlFor="name">Name</FieldLabel>
+                    <Input id="name" placeholder="Enter full name" />
+                  </Field>
+                  <Field>
+                    <FieldLabel htmlFor="email">Email</FieldLabel>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="Enter email address"
+                    />
+                  </Field>
+                  <Field>
+                    <FieldLabel htmlFor="phone">Phone</FieldLabel>
+                    <Input
+                      type="tel"
+                      id="phone"
+                      placeholder="Enter phone number"
+                    />
+                  </Field>
+                  <Field>
+                    <Button type="submit">Save</Button>
+                  </Field>
+                </FieldGroup>
+              </form>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button onClick={() => close()}>Save Contact</Button>
+          </CardFooter>
+        </Card>
+      </Modal>
     </>
   );
 };
