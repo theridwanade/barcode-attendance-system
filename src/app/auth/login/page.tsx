@@ -39,7 +39,7 @@ const LoginPage = () => {
       setVerifying(true);
       await signIn.create({
         identifier: formData.email,
-        password: formData.password,
+        password: formData.password,zz
       });
       setVerifying(false);
       if (signIn.status === "complete") {
