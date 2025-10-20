@@ -195,6 +195,12 @@ const Signup = () => {
                   }
                 />
               </div>
+              <div
+                id="clerk-captcha"
+                data-cl-theme="auto"
+                data-cl-size="normal"
+                data-cl-language="auto"
+              />
             </div>
           </form>
         </CardContent>
