@@ -6,8 +6,8 @@ export const POST = async (req: Request) => {
     const body = await req.json();
     const { name, email, phone } = body;
 
+    console.log({name, email, phone})
     return NextResponse.json({
-      message: "New contact addition proposed!",
-      data: { name, email, phone },
+        success: true,
     });
 } 

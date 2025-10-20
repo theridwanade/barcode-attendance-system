@@ -3,8 +3,7 @@
 "use client";
 
 import { X } from "lucide-react";
-import { useState } from "react";
-import { twMerge } from "tailwind-merge";
+import { type FormEvent, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,14 +13,45 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import useModal from "@/hooks/useModal";
-import { Separator } from "@/components/ui/separator";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
+import useModal from "@/hooks/useModal";
 
 const AddContacts = () => {
   const { open, close, Modal } = useModal();
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+  });
 
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    setLoading(true);
+    const response = await fetch("/api/dashboard/contacts/new", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+    const data = await response.json();
+
+    if (data.success) {
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+      });
+    }
+
+    setLoading(false);
+    close();
+  };
   return (
     <>
       <Button onClick={() => open()}>Add Contacts</Button>
@@ -44,7 +74,14 @@ const AddContacts = () => {
                 <FieldGroup>
                   <Field>
                     <FieldLabel htmlFor="name">Name</FieldLabel>
-                    <Input id="name" placeholder="Enter full name" />
+                    <Input
+                      id="name"
+                      placeholder="Enter full name"
+                      value={formData.name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
+                    />
                   </Field>
                   <Field>
                     <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -52,6 +89,10 @@ const AddContacts = () => {
                       id="email"
                       type="email"
                       placeholder="Enter email address"
+                      value={formData.email}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
                     />
                   </Field>
                   <Field>
@@ -60,17 +101,23 @@ const AddContacts = () => {
                       type="tel"
                       id="phone"
                       placeholder="Enter phone number"
+                      value={formData.phone}
+                      onChange={(e) =>
+                        setFormData({ ...formData, phone: e.target.value })
+                      }
                     />
                   </Field>
                   <Field>
-                    <Button type="submit">Save</Button>
+                    <Button type="submit" onClick={handleSubmit}>
+                      {loading ? <Spinner /> : "Save"}
+                    </Button>
                   </Field>
                 </FieldGroup>
               </form>
             </div>
           </CardContent>
           <CardFooter>
-            <Button onClick={() => close()}>Save Contact</Button>
+            {/* <Button onClick={() => close()}>Save Contact</Button> */}
           </CardFooter>
         </Card>
       </Modal>
