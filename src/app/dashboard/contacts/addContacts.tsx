@@ -14,49 +14,41 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import useModal from "@/hooks/useModal";
+import { Separator } from "@/components/ui/separator";
 
 const AddContacts = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { open, close, Modal } = useModal();
 
   return (
     <>
-      <Button onClick={() => setIsModalOpen(true)}>Add Contacts</Button>
+      <Button onClick={() => open()}>Add Contacts</Button>
 
       {/* Modal overlay */}
-      <div
-        className={twMerge(
-          "fixed inset-0 bg-black/50 flex items-center justify-center z-50 transition-opacity duration-300",
-          isModalOpen ? "opacity-100 visible" : "opacity-0 invisible",
-        )}
-        onClick={() => setIsModalOpen(false)}
-      >
-        {/* Modal content */}
-        <Card className="p-4 shadow-xl" onClick={(e) => e.stopPropagation()}>
-          <CardHeader className="flex justify-between items-center mb-4">
-            <CardTitle>Add New Contact</CardTitle>
-            <CardAction>
-              <Button
-                onClick={() => setIsModalOpen(false)}
-                variant="ghost"
-                size="icon"
-              >
-                <X />
-              </Button>
-            </CardAction>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-gray-600 mb-6">
-              Modal content goes here...
-            </p>
-            <div className="flex justify-end"></div>
-          </CardContent>
-          <CardFooter>
-            <Button onClick={() => setIsModalOpen(false)}>
-              Save Contact
-            </Button>
-          </CardFooter>
-        </Card>
-      </div>
+   <Modal>
+    <Card>
+      <CardHeader className="flex items-center justify-between">
+        <CardTitle>Add New Contact</CardTitle>
+        <CardAction>
+          <Button onClick={() => close()} variant="ghost" size="icon">
+            <X />
+          </Button>
+        </CardAction>
+      </CardHeader>
+      <Separator />
+      <CardContent>
+        <p className="text-sm text-gray-600 mb-6">
+          Modal content goes here...
+        </p>
+        <div className="flex justify-end"></div>
+      </CardContent>
+      <CardFooter>
+        <Button onClick={() => close()}>
+          Save Contact
+        </Button>
+      </CardFooter>
+    </Card>
+   </Modal>
     </>
   );
 };
