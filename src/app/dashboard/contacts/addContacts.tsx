@@ -19,7 +19,7 @@ import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import useModal from "@/hooks/useModal";
 
-const AddContacts = () => {
+const AddContacts = ({onAdded}: {onAdded: () => void}) => {
   const { open, close, Modal } = useModal();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -48,6 +48,7 @@ const AddContacts = () => {
         email: "",
         phone: "",
       });
+      onAdded();
     }
 
     setLoading(false);

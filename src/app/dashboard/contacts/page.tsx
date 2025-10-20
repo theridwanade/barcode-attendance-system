@@ -1,21 +1,27 @@
+"use client";
 import { SignedIn, UserButton } from "@clerk/nextjs";
+import { useCallback, useEffect, useState } from "react";
 import AddContacts from "./addContacts";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 
-const getContactsData = async () => {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_APP_BASE_URL}/api/dashboard/contacts`);
 
-  const data = await response.json();
-  if (response.ok) {
-    return data;
-  } else {
-    console.error("Failed to fetch contacts data");
-  }
-};
+const Page = () => {
+  const [contacts, setContacts] = useState([]);
 
-const Page = async () => {
-  const contactsData = await getContactsData();
+  const fetchContacts = useCallback(async () => {
+    try {
+      const res = await fetch("/api/dashboard/contacts");
+      const data = await res.json();
+      setContacts(data);
+    } catch (err) {
+      console.error("Error fetching contacts:", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchContacts();
+  }, [fetchContacts]);
 
   return (
     <>
@@ -27,12 +33,12 @@ const Page = async () => {
       </header>
       <main className="p-4">
         <div className="flex justify-end">
-          <AddContacts />
+          <AddContacts onAdded={fetchContacts} />
         </div>
 
         {/* div for the main body */}
         <div className="mt-4 mx-5">
-          <DataTable columns={columns} data={contactsData} />
+          <DataTable columns={columns} data={contacts} />
         </div>
       </main>
     </>
