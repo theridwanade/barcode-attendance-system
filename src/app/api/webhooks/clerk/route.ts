@@ -1,5 +1,5 @@
 import { connectToDatabase } from "@/lib/connectdb";
-import Admins from "@/models/admins.mode";
+import Admins from "@/models/admins.model";
 import { headers } from "next/headers";
 import { Webhook } from "svix";
 

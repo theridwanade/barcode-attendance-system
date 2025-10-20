@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/connectdb";
 import Contacts from "@/models/contacts.model";
 import { auth } from "@clerk/nextjs/server";
-import Admins from "@/models/admins.mode";
+import Admins from "@/models/admins.model";
 
 export const POST = async (req: Request) => {
   const body = await req.json();
