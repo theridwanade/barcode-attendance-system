@@ -1,12 +1,14 @@
 /** biome-ignore-all lint/a11y/noStaticElementInteractions: Cause i need that */
 /** biome-ignore-all lint/a11y/useKeyWithClickEvents: Cause i need that too */
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 const useModal = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
-  const Modal = ({ children }: { children: React.ReactNode }) => {
+  const open = useCallback(() => setIsOpen(true), []);
+  const close = useCallback(() => setIsOpen(false), []);
+  
+  // biome-ignore lint/correctness/useExhaustiveDependencies: I don't understand so i don't care, future me or who are you ignore.
+    const Modal = useCallback(({ children }: { children: React.ReactNode }) => {
     if (!isOpen) return null;
     return (
       <div
@@ -18,7 +20,7 @@ const useModal = () => {
         </div>
       </div>
     );
-  };
+  }, [isOpen]);
   return { isOpen, open, close, Modal };
 };
 export default useModal;

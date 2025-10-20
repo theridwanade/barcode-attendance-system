@@ -1,7 +1,7 @@
 import { SignedIn, UserButton } from "@clerk/nextjs";
+import AddContacts from "./addContacts";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
-import AddContacts from "./addContacts";
 
 const getContactsData = async () => {
   // Some i will fetch the data from here via api
@@ -51,7 +51,7 @@ const Page = async () => {
       </header>
       <main className="p-4">
         <div className="flex justify-end">
-        <AddContacts />
+          <AddContacts />
         </div>
 
         {/* div for the main body */}
