@@ -26,14 +26,15 @@ if (!globalForMongoose.mongooseCache) {
 }
 
 export const connectToDatabase = async () => {
-  if (globalForMongoose.mongooseCache.conn) {
-    return globalForMongoose.mongooseCache.conn;
+    const cache = globalForMongoose.mongooseCache;
+  if (cache.conn) {
+    return cache.conn;
   }
 
-  if (!globalForMongoose.mongooseCache.promise) {
-    globalForMongoose.mongooseCache.promise = mongoose.connect(MONGODB_URI);
+  if (!cache.promise) {
+    cache.promise = mongoose.connect(MONGODB_URI).then((m) => m);
   }
-    globalForMongoose.mongooseCache.conn = await globalForMongoose.mongooseCache.promise;
+    cache.conn = await cache.promise;
     
-  return globalForMongoose.mongooseCache.conn;
+  return cache.conn;
 };
