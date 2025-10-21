@@ -18,7 +18,7 @@ const attendeesSchema = new Schema({
 }, { _id: false });
 
 const eventsSchema = new Schema({
-    name: {
+    title: {
         type: String,
         required: true,
     },

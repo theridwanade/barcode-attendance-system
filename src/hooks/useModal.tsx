@@ -1,5 +1,6 @@
 /** biome-ignore-all lint/a11y/noStaticElementInteractions: Cause i need that */
 /** biome-ignore-all lint/a11y/useKeyWithClickEvents: Cause i need that too */
+"use client";
 import { useCallback, useState } from "react";
 
 const useModal = () => {
