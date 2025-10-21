@@ -9,12 +9,12 @@ const useModal = () => {
   const close = useCallback(() => setIsOpen(false), []);
   
   // biome-ignore lint/correctness/useExhaustiveDependencies: I don't understand so i don't care, future me or who are you ignore.
-    const Modal = useCallback(({ children }: { children: React.ReactNode }) => {
+  const Modal = useCallback(({ children, closeCallback }: { children: React.ReactNode, closeCallback: () => void }) => {
     if (!isOpen) return null;
     return (
       <div
         className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 transition-opacity duration-300 opacity-100"
-        onClick={close}
+        onClick={() => {close(); closeCallback();}}
       >
         <div className="max-w-[600px] w-full mx-5" onClick={(e) => e.stopPropagation()}>
           {children}

@@ -30,6 +30,9 @@ const CreateEvents = ({ onAdded }: { onAdded: () => void }) => {
   }
   const { open, close, Modal } = useModal();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState({
+    hasError: false, message: "",
+  })
   const [formData, setFormData] = useState<FormDataType>({
     title: "",
     description: "",
@@ -42,6 +45,12 @@ const CreateEvents = ({ onAdded }: { onAdded: () => void }) => {
     e.preventDefault();
     try {
       setLoading(true);
+      if (!formData.date || !formData.title || !formData.location) {
+        setError({ hasError: true, message: "All fields are required" });
+        return;
+      } else {
+        setError({ hasError: false, message: "" });
+      }
       const response = await fetch("/api/dashboard/events/new", {
         method: "POST",
         headers: {
@@ -52,11 +61,6 @@ const CreateEvents = ({ onAdded }: { onAdded: () => void }) => {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-    } catch (err) {
-      console.error("Failed to create event:", err);
-    } finally {
-      onAdded();
-      setLoading(false);
       close();
       setFormData({
         title: "",
@@ -64,12 +68,17 @@ const CreateEvents = ({ onAdded }: { onAdded: () => void }) => {
         date: undefined,
         location: "",
       });
+    } catch (err) {
+      console.error("Failed to create event:", err);
+    } finally {
+      onAdded();
+      setLoading(false);
     }
   };
   return (
     <>
       <Button onClick={open}>Create Event</Button>
-      <Modal>
+      <Modal closeCallback={() => setError({ hasError: false, message: "" })}>
         <Card>
           <CardHeader className="flex items-center justify-between">
             <CardTitle>Create New Event</CardTitle>
@@ -172,6 +181,9 @@ const CreateEvents = ({ onAdded }: { onAdded: () => void }) => {
                       }
                     />
                   </Field>
+                  {error.hasError && (
+                    <p className="text-red-500">{error.message}</p>
+                  )}
                   <Field>
                     <Button
                       type="submit"
