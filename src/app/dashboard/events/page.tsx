@@ -32,7 +32,16 @@ const Page = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      console.log("Form Data Submitted:", formData);
+      const response = await fetch("/api/dashboard/events/new", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
     } catch (err) {
       console.error("Failed to create event:", err);
     } finally {
