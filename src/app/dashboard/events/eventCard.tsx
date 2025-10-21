@@ -8,17 +8,31 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-const EventCard = () => {
+export interface EventCardProps {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  location: string;
+}
+
+const EventCard = ({
+  id,
+  title,
+  description,
+  date,
+  location,
+}: EventCardProps) => {
   return (
     <Card>
       <CardHeader>
         <CardTitle>
-          <Link href={"/dashboard/events/1"} className="hover:underline">
-          Devfest Ilorin 2025
+          <Link href={`/dashboard/events/${id}`} className="hover:underline">
+            {title}
           </Link>
-          </CardTitle>
+        </CardTitle>
         <CardDescription>
-          Date: {new Date().toLocaleDateString()}
+          Date: {new Date(date).toLocaleDateString()}
         </CardDescription>
         <CardAction>
           <Button variant={"outline"} className={"cursor-pointer"}>

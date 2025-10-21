@@ -42,21 +42,19 @@ const AddContacts = ({onAdded}: {onAdded: () => void}) => {
     });
     const data = await response.json();
 
-    if (data.success) {
+
+    
+  } catch (err) {
+    console.error("Failed to add contact:", err);
+  } finally {
+      onAdded();
+      setLoading(false);
+      close();
       setFormData({
         name: "",
         email: "",
         phone: "",
       });
-      onAdded();
-    }
-
-    setLoading(false);
-    close();
-    } catch (err) {
-      console.error("Failed to add contact:", err);
-    } finally {
-      setLoading(false);
     }
   };
   return (
