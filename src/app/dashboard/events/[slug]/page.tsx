@@ -1,17 +1,37 @@
 import { SignedIn, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
+import { connectToDatabase } from "@/lib/connectdb";
+import Events from "@/models/events.model";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 
-const getEventDetails = async (slug: string) => {
+interface EventDetails {
+  title: string;
+  description: string;
+  date: string;
+  eventCreatedAt: string;
+  location: string;
+  totalInvite: number;
+  attendees: number;
+}
+
+interface RouteParams {
+  params: {
+    slug: string;
+  }
+}
+const getEventDetails = async (slug: string): Promise<EventDetails> => {
+  await connectToDatabase();
+  const event = await Events.findById(slug);
+  console.log("Event Details:", event);
   return {
-    title: "Sample Event",
-    description: "This is a sample event description.",
-    date: "2023-10-01",
-    eventCreatedAt: "2023-09-01",
-    location: "Sample Location",
-    totalInvite: 100,
-    attendees: 50,
+    title: event?.title,
+    description: event?.description,
+    date: event?.date.toISOString().split("T")[0],
+    eventCreatedAt: event?.createdAt.toISOString().split("T")[0],
+    location: event?.location,
+    totalInvite: event?.totalInvite?.length ?? 0,
+    attendees: event?.attendees?.length ?? 0,
   };
 };
 
@@ -32,8 +52,9 @@ const getAttendanceData = async (slug: string) => {
   ];
 };
 
-const Page = async () => {
-  const event = await getEventDetails("slug");
+const Page = async ({ params }: RouteParams) => {
+  const {slug} = await params;
+  const event = await getEventDetails(slug);
   const attendanceData = await getAttendanceData("slug");
   return (
     <>

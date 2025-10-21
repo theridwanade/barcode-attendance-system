@@ -2,8 +2,10 @@
 
 import { NextResponse } from "next/server";
 import Events from "@/models/events.model";
+import { connectToDatabase } from "@/lib/connectdb";
 
 export const GET = async (req: Request) => {
+  await connectToDatabase();
   const eventsRecords = await Events.find();
   const events = eventsRecords.map((event) => {
     return {
