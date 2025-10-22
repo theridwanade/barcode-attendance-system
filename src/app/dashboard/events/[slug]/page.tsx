@@ -16,7 +16,7 @@ const getEventDetails = async (slug: string): Promise<EventDetails> => {
   await connectToDatabase();
   const event = await Events.findById(slug);
   return {
-    _id: event?._id,
+    _id: event?._id.toString(),
     title: event?.title,
     description: event?.description,
     date: event?.date.toISOString().split("T")[0],
