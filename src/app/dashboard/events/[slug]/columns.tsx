@@ -10,7 +10,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 export type Attendance = {
   id: string;
   name: string;
-  emailOrNumber: string;
+  email: string;
   checkInTime: string;
 };
 
@@ -20,8 +20,8 @@ export const columns: ColumnDef<Attendance>[] = [
     header: "Name",
   },
   {
-    accessorKey: "emailOrNumber",
-    header: "Email or Phone Number",
+    accessorKey: "email",
+    header: "Email",
   },
   {
     accessorKey: "checkInTime",

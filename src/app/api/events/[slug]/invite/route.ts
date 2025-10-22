@@ -1,6 +1,6 @@
+import { type NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/connectdb";
 import Events from "@/models/events.model";
-import { type NextRequest, NextResponse } from "next/server";
 
 export const POST = async (
   req: NextRequest,
@@ -24,4 +24,4 @@ export const POST = async (
   return NextResponse.json({
     message: `Invite sent for event ${slug}`,
   });
-}
+};

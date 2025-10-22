@@ -13,6 +13,7 @@ const Page = () => {
     try {
       const res = await fetch("/api/dashboard/contacts");
       const data = await res.json();
+      console.log("Fetched Contacts:", data);
       setContacts(data);
     } catch (err) {
       console.error("Error fetching contacts:", err);

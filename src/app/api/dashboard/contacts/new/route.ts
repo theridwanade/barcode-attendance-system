@@ -29,19 +29,12 @@ export const POST = async (req: Request) => {
     );
   }
 
-
-  await Contacts.findOneAndUpdate(
-    { admin: admin._id },
-    {
-      $push: {
-        contacts: { name, email, phone }
-      }
-    },
-    {
-      new: true,
-      upsert: true,
-    }
-  )
+  await Contacts.create({
+    admin: admin._id,
+    name,
+    email,
+    phone,
+  });
 
   return NextResponse.json({
     success: true,

@@ -25,12 +25,12 @@ export const GET = async () => {
     return NextResponse.json({ error: "Admin not found" }, { status: 404 });
   }
 
-  const record = await Contacts.findOne({ admin: admin._id });
-  if (!record) {
+  const records = await Contacts.find({ admin: admin._id });
+  if (!records || records.length === 0) {
     return NextResponse.json([], { status: 200 });
   }
 
-  const contacts = record.contacts || [];
+  const contacts = records || [];
 
   const contactData = contacts.map((contact: Contact, index: number) => ({
     id: index + 1,

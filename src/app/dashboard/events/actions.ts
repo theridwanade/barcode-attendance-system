@@ -11,8 +11,8 @@ export const getContactsData = async (alreadyInvitedContactsId: string[]) => {
   const admin = await Admins.findOne({ clerkId: userId });
   if (!admin) return [];
 
-  const contactsRecords = await Contacts.findOne({ admin: admin._id }).lean();
-  const contacts = contactsRecords?.contacts ?? [];
+  const contactsRecords = await Contacts.find({ admin: admin._id });
+  const contacts = contactsRecords ?? [];
 
   interface Contacts {
     _id?: string;
