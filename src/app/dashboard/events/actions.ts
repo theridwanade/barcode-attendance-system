@@ -29,7 +29,5 @@ export const getContactsData = async () => {
       phone: contact.phone,
     }),
   );
-
-  console.log("Contacts fetched:", formattedContacts);
   return formattedContacts;
 };

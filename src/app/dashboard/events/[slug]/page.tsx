@@ -22,7 +22,7 @@ const getEventDetails = async (slug: string): Promise<EventDetails> => {
     date: event?.date.toISOString().split("T")[0],
     eventCreatedAt: event?.createdAt.toISOString().split("T")[0],
     location: event?.location,
-    totalInvite: event?.totalInvite?.length ?? 0,
+    totalInvite: event?.invitedContacts?.length ?? 0,
     attendees: event?.attendees?.length ?? 0,
   };
 };

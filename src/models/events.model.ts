@@ -36,7 +36,7 @@ const eventsSchema = new Schema({
     },
     invitedContacts: [{
         type: Schema.Types.ObjectId,
-        ref: "Contact",
+        ref: "Contacts",
     }],
     attendees: [attendeesSchema],
 }, { timestamps: true });
