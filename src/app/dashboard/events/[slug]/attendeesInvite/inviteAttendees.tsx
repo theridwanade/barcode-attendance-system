@@ -73,12 +73,13 @@ const InviteAttendees = ({ eventDetails }: { eventDetails: EventDetails }) => {
 
   const handleAttendeesInvite = async (selectedRows: typeof contacts) => {
     try {
+      const attendeesId = selectedRows.map((attendee) => attendee.id);
       const response = await fetch(`/api/events/${eventDetails._id}/invite`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ attendees: selectedRows }),
+        body: JSON.stringify({ attendees: attendeesId }),
       });
       if (!response.ok) {
         setError({ isError: true, message: "Failed to invite attendees" });

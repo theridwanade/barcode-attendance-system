@@ -9,18 +9,16 @@ export const POST = async (
   const { slug } = await params;
 
   const body = await req.json();
-  const attendees = body.attendees.map((attendee: any) => attendee.id);
-  console.log("Attendees to be invited:", attendees);
+  const attendees = body.attendees;
   await connectToDatabase();
-  await Events.findOneAndUpdate(
-    { _id: slug },
-    {
-      $push: {
-        invitedContacts: { $each: attendees },
-      },
-    },
-  );
 
+  attendees.forEach(async (attendeeId: string) => {
+    await Events.findOneAndUpdate(
+      { _id: slug },
+      { $push: { invitedContacts: { contact: attendeeId } } },
+      { new: true },
+    );
+  });
 
   // Example response
   return NextResponse.json({

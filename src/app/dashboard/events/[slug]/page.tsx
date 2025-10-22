@@ -22,9 +22,7 @@ const getEventDetails = async (slug: string): Promise<EventDetails> => {
     date: event?.date.toISOString().split("T")[0],
     eventCreatedAt: event?.createdAt.toISOString().split("T")[0],
     location: event?.location,
-    invitedContacts: event.invitedContacts?.map((c: any) =>
-      typeof c === "object" && c._id ? c._id.toString() : c
-    ) ?? [],
+    invitedContacts: event?.invitedContacts?.map((c: any) => c.contact.toString()) ?? [],
     attendees: event?.attendees?.map((a: any) =>
       typeof a === "object" && a._id ? a._id.toString() : a
     ) ?? [],
@@ -51,6 +49,7 @@ const getAttendanceData = async (slug: string) => {
 const Page = async ({ params }: RouteParams) => {
   const { slug } = await params;
   const event = await getEventDetails(slug);
+  // console.log("Event Details:", event);
   const attendanceData = await getAttendanceData("slug");
   return (
     <>

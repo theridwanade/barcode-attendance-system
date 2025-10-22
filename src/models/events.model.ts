@@ -1,19 +1,14 @@
 import mongoose, { Schema } from "mongoose";
 
-const attendeesSchema = new Schema({
-    user: {
+
+const invitedContactsSchema = new Schema({
+    contact: {
         type: Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
-    },
-    email: {
-        type: String,
+        ref: "Contacts",
         required: true,
     },
     checkInTime: {
         type: Date,
-        required: true,
-        default: Date.now,
     }
 }, { _id: false });
 
@@ -34,11 +29,7 @@ const eventsSchema = new Schema({
         type: String,
         required: false,
     },
-    invitedContacts: [{
-        type: Schema.Types.ObjectId,
-        ref: "Contacts",
-    }],
-    attendees: [attendeesSchema],
+    invitedContacts: [invitedContactsSchema],
 }, { timestamps: true });
 
 const Events = mongoose.models.Events || mongoose.model("Events", eventsSchema);
