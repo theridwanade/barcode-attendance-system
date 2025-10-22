@@ -15,6 +15,7 @@ import type { EventDetails } from "@/types";
 import { getContactsData } from "../../actions";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
+import { useRouter } from "next/navigation";
 
 const InviteAttendees = ({ eventDetails }: { eventDetails: EventDetails }) => {
   const { open, close, Modal } = useModal();
@@ -24,6 +25,7 @@ const InviteAttendees = ({ eventDetails }: { eventDetails: EventDetails }) => {
   });
   const [contacts, setContacts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: who knows
   const fetchContacts = useCallback(async () => {
@@ -81,8 +83,8 @@ const InviteAttendees = ({ eventDetails }: { eventDetails: EventDetails }) => {
         setError({ isError: true, message: "Failed to invite attendees" });
         return;
       }
-
       close();
+      router.refresh(); 
     } catch (error) {
       console.error("Error inviting attendees:", error);
     }
