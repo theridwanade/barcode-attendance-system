@@ -5,6 +5,6 @@ export interface EventDetails {
       date: string;
       eventCreatedAt: string;
       location: string;
-      totalInvite: number;
-      attendees: number;
+      invitedContacts: string[];
+      attendees: string[];
 }

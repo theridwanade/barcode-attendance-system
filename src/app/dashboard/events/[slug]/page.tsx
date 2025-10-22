@@ -22,8 +22,12 @@ const getEventDetails = async (slug: string): Promise<EventDetails> => {
     date: event?.date.toISOString().split("T")[0],
     eventCreatedAt: event?.createdAt.toISOString().split("T")[0],
     location: event?.location,
-    totalInvite: event?.invitedContacts?.length ?? 0,
-    attendees: event?.attendees?.length ?? 0,
+    invitedContacts: event.invitedContacts?.map((c: any) =>
+      typeof c === "object" && c._id ? c._id.toString() : c
+    ) ?? [],
+    attendees: event?.attendees?.map((a: any) =>
+      typeof a === "object" && a._id ? a._id.toString() : a
+    ) ?? [],
   };
 };
 
@@ -63,8 +67,10 @@ const Page = async ({ params }: RouteParams) => {
           <p className="text-lg">Event Date: {event.date}</p>
           <p className="text-lg">Event Created At: {event.eventCreatedAt}</p>
           <p className="text-lg">Location: {event.location}</p>
-          <p className="text-lg">Attendees: {event.attendees}</p>
-          <p className="text-lg">Total Invite: {event.totalInvite}</p>
+          <p className="text-lg">Attendees: {event.attendees
+            ?.length ?? 0}</p>
+          <p className="text-lg">Total Invite: {event.invitedContacts
+            ?.length ?? 0}</p>
           <div className="flex gap-4 mt-4">
             <Button>Register Attendance</Button>
             <Button>Assign an Admin</Button>

@@ -4,7 +4,7 @@ import { connectToDatabase } from "@/lib/connectdb";
 import Admins from "@/models/admins.model";
 import Contacts from "@/models/contacts.model";
 
-export const getContactsData = async () => {
+export const getContactsData = async (alreadyInvitedContactsId: string[]) => {
   await connectToDatabase();
   const { userId } = await auth();
 
@@ -21,13 +21,15 @@ export const getContactsData = async () => {
     phone: string;
   }
 
-  const formattedContacts = contacts.map(
-    (contact: Contacts) => ({
+  const formattedContacts = contacts
+    .filter(
+      (contact: any) => !alreadyInvitedContactsId.includes(contact._id?.toString())
+    )
+    .map((contact: any) => ({
       id: contact._id?.toString(),
-      name: contact.name,
-      email: contact.email,
-      phone: contact.phone,
-    }),
-  );
+      name: contact.name ?? "",
+      email: contact.email ?? "",
+      phone: contact.phone ?? "",
+    }));
   return formattedContacts;
 };

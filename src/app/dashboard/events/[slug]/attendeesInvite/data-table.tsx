@@ -22,6 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Spinner } from "@/components/ui/spinner";
+import { useRouter } from "next/navigation";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -37,6 +38,7 @@ export const DataTable = <TData, TValue>({
   const [rowSelection, setRowSelection] = useState({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
+  const router = useRouter();
   const table = useReactTable({
     data,
     columns,
@@ -71,6 +73,7 @@ export const DataTable = <TData, TValue>({
                   onClick={() => {
                     setLoading(true)
                     handleAttendeesInvite(selectedRows)
+                    router.refresh();
                     setLoading(false)
                   }}
                   disabled={loading || selectedRows.length === 0}

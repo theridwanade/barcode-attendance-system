@@ -34,13 +34,14 @@ const InviteAttendees = ({ eventDetails }: { eventDetails: EventDetails }) => {
       setIsLoading(true);
       setError({ isError: false, message: "" });
 
-      const data = await getContactsData();
+      const data = await getContactsData(eventDetails.invitedContacts || []);
       if (data.length === 0) {
         setError({
           isError: true,
           message:
-            "No contacts found. Please add contacts to invite attendees.",
+            "No contacts found. You have already invited all your contacts.",
         });
+        router.refresh();
         return;
       }
 
@@ -55,13 +56,13 @@ const InviteAttendees = ({ eventDetails }: { eventDetails: EventDetails }) => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [eventDetails._id, eventDetails.invitedContacts, isLoading]);
 
   useEffect(() => {
-    if (eventDetails.totalInvite === 0) {
+    if (eventDetails.invitedContacts?.length === 0) {
       open();
     }
-  }, [eventDetails.totalInvite, open]);
+  }, [eventDetails.invitedContacts, open]);
   const hasFetched = useRef(false);
   useEffect(() => {
     if (!hasFetched.current) {
@@ -83,8 +84,11 @@ const InviteAttendees = ({ eventDetails }: { eventDetails: EventDetails }) => {
         setError({ isError: true, message: "Failed to invite attendees" });
         return;
       }
+
+      await fetchContacts();
+      router.refresh();
       close();
-      router.refresh(); 
+      await fetchContacts();
     } catch (error) {
       console.error("Error inviting attendees:", error);
     }
@@ -94,6 +98,7 @@ const InviteAttendees = ({ eventDetails }: { eventDetails: EventDetails }) => {
       <Button
         onClick={() => {
           setError({ isError: false, message: "" });
+          fetchContacts();
           open();
         }}
         variant={"destructive"}
@@ -106,7 +111,7 @@ const InviteAttendees = ({ eventDetails }: { eventDetails: EventDetails }) => {
             <div>
               <div className="flex flex-row justify-between items-center mb-4">
                 <CardTitle className="text-lg font-semibold">
-                  {eventDetails.totalInvite === 0
+                  {eventDetails.invitedContacts?.length === 0
                     ? "Invite at least one attendee"
                     : "Invite Attendees"}{" "}
                   to {eventDetails.title}
@@ -118,9 +123,9 @@ const InviteAttendees = ({ eventDetails }: { eventDetails: EventDetails }) => {
                 </CardAction>
               </div>
               <CardDescription>
-                {eventDetails.totalInvite === 0
+                {eventDetails.invitedContacts?.length === 0
                   ? "You have not invited any attendees yet. Please invite at least one attendee to proceed."
-                  : `You have invited ${eventDetails.totalInvite} attendees to this event.`}
+                  : `You have invited ${eventDetails.invitedContacts?.length} attendees to this event.`}
               </CardDescription>
             </div>
           </CardHeader>
