@@ -2,29 +2,21 @@ import { SignedIn, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { connectToDatabase } from "@/lib/connectdb";
 import Events from "@/models/events.model";
+import type { EventDetails } from "@/types";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
-
-interface EventDetails {
-  title: string;
-  description: string;
-  date: string;
-  eventCreatedAt: string;
-  location: string;
-  totalInvite: number;
-  attendees: number;
-}
+import InviteAttendees from "./inviteAttendees";
 
 interface RouteParams {
   params: {
     slug: string;
-  }
+  };
 }
 const getEventDetails = async (slug: string): Promise<EventDetails> => {
   await connectToDatabase();
   const event = await Events.findById(slug);
-  console.log("Event Details:", event);
   return {
+    _id: event?._id,
     title: event?.title,
     description: event?.description,
     date: event?.date.toISOString().split("T")[0],
@@ -53,7 +45,7 @@ const getAttendanceData = async (slug: string) => {
 };
 
 const Page = async ({ params }: RouteParams) => {
-  const {slug} = await params;
+  const { slug } = await params;
   const event = await getEventDetails(slug);
   const attendanceData = await getAttendanceData("slug");
   return (
@@ -76,8 +68,8 @@ const Page = async ({ params }: RouteParams) => {
           <div className="flex gap-4 mt-4">
             <Button>Register Attendance</Button>
             <Button>Assign an Admin</Button>
-            <Button>Invite Attendees</Button>
-            <Button variant={"destructive"}>Generate Report</Button>
+            <InviteAttendees eventDetails={event} />
+            <Button>Generate Report</Button>
           </div>
         </div>
         {/* Data table for attendance */}
