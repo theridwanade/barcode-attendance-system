@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/popover";
 import { Spinner } from "@/components/ui/spinner";
 import useModal from "@/hooks/useModal";
+import { useRouter } from "next/navigation";
 
 const CreateEvents = ({ onAdded }: { onAdded: () => void }) => {
   interface FormDataType {
@@ -40,6 +41,7 @@ const CreateEvents = ({ onAdded }: { onAdded: () => void }) => {
     location: "",
   });
   const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,18 +63,19 @@ const CreateEvents = ({ onAdded }: { onAdded: () => void }) => {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      close();
       setFormData({
         title: "",
         description: "",
         date: undefined,
         location: "",
       });
+      setLoading(false);
+      router.push(`/dashboard/events/${(await response.json()).id}`);
+      close();
     } catch (err) {
       console.error("Failed to create event:", err);
     } finally {
       onAdded();
-      setLoading(false);
     }
   };
   return (

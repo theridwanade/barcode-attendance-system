@@ -28,13 +28,12 @@ export const POST = async (req: Request)  => {
         );
       }
 
-      await Events.create({
+      const newEvent = await Events.create({
         title,
         description,
         date,
         location
       })
 
-    
-    return NextResponse.json({ message: "Event created successfully" }, { status: 201 });
+    return NextResponse.json({ message: "Event created successfully", id: newEvent._id }, { status: 201 });
 }
