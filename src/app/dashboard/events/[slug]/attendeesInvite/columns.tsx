@@ -5,7 +5,7 @@ import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export type ContactsInviteColumnType = {
-    id: string;
+    id?: string;
     name: string;
     email: string;
     phone: string;
@@ -30,10 +30,6 @@ export const columns: ColumnDef<ContactsInviteColumnType>[] = [
                 aria-label="Select row"
             />
         ),
-    },
-    {
-        accessorKey: "id", 
-        header: "ID",
     },
     {
         accessorKey: "name", 

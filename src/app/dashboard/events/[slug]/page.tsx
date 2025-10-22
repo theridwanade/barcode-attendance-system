@@ -1,4 +1,4 @@
-import { SignedIn, UserButton } from "@clerk/nextjs";
+import { SignedIn, useAuth, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import { connectToDatabase } from "@/lib/connectdb";
 import Events from "@/models/events.model";
