@@ -29,7 +29,7 @@ const CreateEvents = ({ onAdded }: { onAdded: () => void }) => {
     date: Date | undefined;
     location: string;
   }
-  const { open, close, Modal } = useModal();
+  const { isOpen, open, close, Modal } = useModal();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState({
     hasError: false, message: "",
@@ -49,6 +49,7 @@ const CreateEvents = ({ onAdded }: { onAdded: () => void }) => {
       setLoading(true);
       if (!formData.date || !formData.title || !formData.location) {
         setError({ hasError: true, message: "All fields are required" });
+        setLoading(false);
         return;
       } else {
         setError({ hasError: false, message: "" });
@@ -80,8 +81,11 @@ const CreateEvents = ({ onAdded }: { onAdded: () => void }) => {
   };
   return (
     <>
-      <Button onClick={open}>Create Event</Button>
-      <Modal closeCallback={() => setError({ hasError: false, message: "" })}>
+      <Button onClick={() => { open(); if (!isOpen) {
+        setError({ hasError: false, message: "" });
+        setLoading(false);
+      }}}>Create Event</Button>
+      <Modal>
         <Card>
           <CardHeader className="flex items-center justify-between">
             <CardTitle>Create New Event</CardTitle>
