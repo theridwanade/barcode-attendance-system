@@ -5,7 +5,7 @@ import Events from "@/models/events.model";
 import type { EventDetails } from "@/types";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
-import InviteAttendees from "./inviteAttendees";
+import InviteAttendees from "./attendeesInvite/inviteAttendees";
 
 interface RouteParams {
   params: {

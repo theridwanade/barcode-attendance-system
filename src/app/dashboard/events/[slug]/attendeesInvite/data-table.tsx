@@ -1,16 +1,13 @@
 "use client";
-
-import type {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-} from "@tanstack/react-table";
 import {
+  type ColumnDef,
+  type ColumnFiltersState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  type SortingState,
   useReactTable,
 } from "@tanstack/react-table";
 import { useState } from "react";
@@ -24,20 +21,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Spinner } from "@/components/ui/spinner";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  handleAttendeesInvite: (selectedRows: TData[]) => void;
 }
 
 export const DataTable = <TData, TValue>({
   columns,
   data,
+    handleAttendeesInvite
 }: DataTableProps<TData, TValue>) => {
-  const [sorting, setSorting] = useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState({});
-
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [sorting, setSorting] = useState<SortingState>([]);
   const table = useReactTable({
     data,
     columns,
@@ -53,19 +52,35 @@ export const DataTable = <TData, TValue>({
       columnFilters,
       rowSelection,
     },
+    enableRowSelection: true,
   });
-
+    const selectedRows = table.getSelectedRowModel().rows.map((row) => row.original);
+    const [loading, setLoading] = useState(false);
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className="flex items-center py-4 gap-x-5">
         <Input
-          placeholder="Search name..."
+          placeholder="Filter contacts..."
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(even) =>
             table.getColumn("name")?.setFilterValue(even.target.value)
           }
           className=""
         />
+              <Button
+                  onClick={() => {
+                    setLoading(true)
+                    handleAttendeesInvite(selectedRows)
+                    setLoading(false)
+                  }}
+                  disabled={loading || selectedRows.length === 0}
+              >
+                  {loading ? (
+                      <Spinner />
+                  ) : (
+                      `Invite ${selectedRows.length} attendee(s)`
+                  )}
+              </Button>
       </div>
       <div className="overflow-hidden rounded-md border">
         <Table>
