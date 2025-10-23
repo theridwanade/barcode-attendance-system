@@ -1,11 +1,12 @@
 import { SignedIn, UserButton } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { connectToDatabase } from "@/lib/connectdb";
 import Events from "@/models/events.model";
 import type { EventDetails } from "@/types";
 import InviteAttendees from "./attendeesInvite/inviteAttendees";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
+import Link from "next/link";
 
 interface RouteParams {
   params: {
@@ -88,7 +89,9 @@ const Page = async ({ params }: RouteParams) => {
             Total Invite: {event.invitedContacts?.length ?? 0}
           </p>
           <div className="flex gap-4 mt-4">
-            <Button>Register Attendance</Button>
+            <Link href={`/events/${event._id}/record-attendance`} className={buttonVariants({variant: "default"})}>
+              Register Attendance
+            </Link>
             <Button>Assign an Admin</Button>
             <InviteAttendees eventDetails={event} />
             <Button>Generate Report</Button>
