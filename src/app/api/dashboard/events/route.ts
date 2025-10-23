@@ -31,10 +31,9 @@ export const GET = async (req: Request) => {
       id: event._id,
       title: event.title,
       description: event.description,
-      date: event.date,
-      location: event.location,
+      date: event.date.start,
+      location: `{ ${event.venue.name} - ${event.venue.address} }`,
       invitedContacts: event.invitedContacts,
-      attendees: event.attendees,
       createdAt: event.createdAt,
       updatedAt: event.updatedAt,
     };
