@@ -19,9 +19,7 @@ export interface EventCardProps {
 const EventCard = ({
   id,
   title,
-  description,
   date,
-  location,
 }: EventCardProps) => {
   return (
     <Card>
