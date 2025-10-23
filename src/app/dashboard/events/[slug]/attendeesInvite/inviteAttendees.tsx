@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import useModal from "@/hooks/useModal";
-import type { EventDetails } from "@/types";
+import type { EventDetails } from "@/types/types";
 import { getContactsData } from "../../actions";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
