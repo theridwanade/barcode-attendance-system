@@ -1,4 +1,4 @@
-import { PassEventTicketType } from '../types/passTypes.ts';
+import { PassClassEventTicketType, PassObjectEventTicketType } from '../types/passTypes.ts';
 import { google } from 'googleapis';
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -11,11 +11,8 @@ const googlePassSvcKey = JSON.parse(
 );
 
 const issuerId = '3388000000023034056';
-const classId = `${issuerId}.event_ticket_v1`;
-const objectId = `${issuerId}.event_ticket_v1_object_001`;
 
 // Initialise Google wallet API client
-
 const auth = new google.auth.GoogleAuth({
     credentials: googlePassSvcKey,
     scopes: ['https://www.googleapis.com/auth/wallet_object.issuer'],
@@ -26,7 +23,7 @@ const walletClient = google.walletobjects({
     auth: auth,
 })
 
-const createClass = async (classData: PassEventTicketType) => {
+const createClass = async (classData: PassClassEventTicketType) => {
     let response;
 
     try {
@@ -55,8 +52,34 @@ const createClass = async (classData: PassEventTicketType) => {
     return classData.id;
 }
 
-createClass({
-    id: `${issuerId}.event_ticket_v1.0.3`,
+const createObject = async (classId: `${string}.${string}`, objectData: PassObjectEventTicketType) => {
+    let response;
+
+    try {
+        response = await walletClient.eventticketobject.get({
+            resourceId: objectId,
+        })
+        console.log(`Object ${objectId} already exists!`);
+
+        return objectId;
+    } catch (err: Error | any) {
+        if (err.response && err.response.status !== 404) {
+            console.log(err);
+            return objectId;
+        }
+    }
+
+    response = await walletClient.eventticketobject.insert({
+        requestBody: objectData
+    });
+    console.log('Object insert response');
+    console.log(response);
+
+    return objectId;
+}
+
+const passClassData: PassClassEventTicketType = {
+    id: `${issuerId}.event_ticket_v1.0.4`,
     issuerName: "theridwanade",
     reviewStatus: "UNDER_REVIEW",
     eventName: {
@@ -96,4 +119,33 @@ createClass({
         end: '2025-12-01T21:00:00Z'
     },
     multipleDevicesAndHoldersAllowedStatus: "ONE_USER_ALL_DEVICES"
-});
+}
+
+const classId = await createClass(passClassData);
+const objectId = `${issuerId}.event_ticket_v1_object_001`;
+
+const passObjectData: PassObjectEventTicketType = {
+    id: objectId,
+    classId: classId,
+    state: "ACTIVE",
+    barcode: {
+        type: "QR_CODE",
+        value: "TICKET-1234567890, don't even know whats happening here, just testing",
+    },
+    cardTitle: {
+        defaultValue: {
+            language: 'en-US',
+            value: 'Devfest Ticket'
+        }
+    },
+    ticketHolderName: "Ridwan Oyeniyi"
+}
+
+const passObjectId = await createObject(classId, passObjectData);
+
+console.log(`Pass Object created with ID: ${passObjectId}`);
+
+
+
+
+
