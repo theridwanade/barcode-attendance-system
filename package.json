@@ -25,6 +25,7 @@
     "googleapis": "^164.1.0",
     "input-otp": "^1.4.2",
     "jsonwebtoken": "^9.0.2",
+    "jsqr": "^1.4.0",
     "lucide-react": "^0.545.0",
     "mongoose": "^8.19.1",
     "next": "15.5.4",
