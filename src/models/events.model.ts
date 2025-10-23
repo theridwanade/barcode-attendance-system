@@ -1,7 +1,33 @@
 import mongoose, { Schema } from "mongoose";
 
+interface IInvitedContact {
+    contact: mongoose.Types.ObjectId;
+    checkInTime?: Date;
+    eventPassObjectId?: string;
+}
 
-const invitedContactsSchema = new Schema({
+interface IEventDate {
+    start: Date;
+    end?: Date;
+}
+
+interface IVenue {
+    name: string;
+    address: string;
+}
+
+export interface IEvent extends mongoose.Document {
+    admin: mongoose.Types.ObjectId;
+    eventPassClassId?: string;
+    title: string;
+    description?: string;
+    date: IEventDate;
+    venue: IVenue;
+    invitedContacts: IInvitedContact[];
+    createdAt: Date;
+    updatedAt: Date;
+}
+const invitedContactsSchema = new Schema<IInvitedContact>({
     contact: {
         type: Schema.Types.ObjectId,
         ref: "Contacts",
@@ -9,24 +35,31 @@ const invitedContactsSchema = new Schema({
     },
     checkInTime: {
         type: Date,
-    }
+    },
+    eventPassObjectId: {
+        type: String,
+    },
 }, { _id: false });
 
-const eventDateSchema = new Schema({
+const eventDateSchema = new Schema<IEventDate>({
     start: { type: Date, required: true },
     end: { type: Date },
 }, { _id: false });
 
-const venueSchema = new Schema({
+const venueSchema = new Schema<IVenue>({
     name: { type: String, required: true },
     address: { type: String, required: true },
 }, { _id: false });
 
-const eventsSchema = new Schema({
+const eventsSchema = new Schema<IEvent>({
     admin: {
         type: Schema.Types.ObjectId,
         ref: "Admins",
         required: true,
+    },
+    eventPassClassId: {
+        type: String,
+        required: false,
     },
     title: {
         type: String,
@@ -41,6 +74,6 @@ const eventsSchema = new Schema({
     invitedContacts: [invitedContactsSchema],
 }, { timestamps: true });
 
-const Events = mongoose.models.Events || mongoose.model("Events", eventsSchema);
+const Events: mongoose.Model<IEvent> = mongoose.models.Events || mongoose.model<IEvent>("Events", eventsSchema);
 
 export default Events;
