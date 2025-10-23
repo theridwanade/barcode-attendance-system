@@ -4,7 +4,7 @@
  */
 export interface PassClassEventTicketType {
     /** Unique identifier for this class (issuerId.identifier) */
-    id: `${string}.${string}`;
+    id: string;
 
     /** The name of your business or issuing entity */
     issuerName?: string;
@@ -50,10 +50,10 @@ export interface PassClassEventTicketType {
  */
 export interface PassObjectEventTicketType {
     /** Unique identifier for this object (issuerId.identifier) */
-    id: `${string}.${string}`;
+    id: string;
 
     /** Reference to its class (must exist first) */
-    classId: `${string}.${string}`;
+    classId: string;
 
     /** Current pass state */
     state?: "ACTIVE" | "EXPIRED" | "COMPLETED" | "CANCELED";

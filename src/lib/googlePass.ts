@@ -51,7 +51,7 @@ export const createClass = async (classData: PassClassEventTicketType) => {
 };
 
 export const createObject = async (
-  classId: `${string}.${string}`,
+  classId: string,
   objectData: PassObjectEventTicketType,
 ) => {
   let response;
