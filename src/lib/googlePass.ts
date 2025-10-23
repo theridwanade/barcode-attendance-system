@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import type {
   PassClassEventTicketType,
   PassObjectEventTicketType,
-} from "../types/passTypes.ts";
+} from "@/types/passTypes.ts";
 
 const Dirname = path.dirname(new URL(import.meta.url).pathname);
 const svcKeyPath = path.join(Dirname, "..", "..", "service_account.json");
@@ -27,14 +27,13 @@ const walletClient = google.walletobjects({
   auth: auth,
 });
 
-const createClass = async (classData: PassClassEventTicketType) => {
+export const createClass = async (classData: PassClassEventTicketType) => {
   let response;
 
   try {
     response = await walletClient.eventticketclass.get({
       resourceId: classData.id,
     });
-    console.log(`Class ${classData.id} already exists!`);
 
     return classData.id;
   } catch (err: Error | any) {
@@ -44,19 +43,14 @@ const createClass = async (classData: PassClassEventTicketType) => {
     }
   }
 
-  const newClass = classData;
-
   response = await walletClient.eventticketclass.insert({
-    requestBody: newClass,
+    requestBody: classData,
   });
-
-  console.log("Class insert response");
-  console.log(response);
 
   return classData.id;
 };
 
-const createObject = async (
+export const createObject = async (
   classId: `${string}.${string}`,
   objectData: PassObjectEventTicketType,
 ) => {
@@ -66,7 +60,6 @@ const createObject = async (
     response = await walletClient.eventticketobject.get({
       resourceId: objectId,
     });
-    console.log(`Object ${objectId} already exists!`);
 
     return objectId;
   } catch (err: Error | any) {
@@ -79,8 +72,6 @@ const createObject = async (
   response = await walletClient.eventticketobject.insert({
     requestBody: objectData,
   });
-  console.log("Object insert response");
-  console.log(response);
 
   return objectId;
 };
@@ -151,12 +142,10 @@ const passObjectData: PassObjectEventTicketType = {
 
 const passObjectId = await createObject(classId, passObjectData);
 
-console.log(`Pass Object created with ID: ${passObjectId}`);
-
 /**
  * Generate a "Save to Google Wallet" JWT link
  */
-const generateSaveLink = (objectData: PassObjectEventTicketType) => {
+export const generateSaveLink = async (objectData: PassObjectEventTicketType) => {
   const serviceAccountEmail = googlePassSvcKey.client_email;
   const privateKey = googlePassSvcKey.private_key;
 
@@ -175,6 +164,3 @@ const generateSaveLink = (objectData: PassObjectEventTicketType) => {
   const saveUrl = `https://pay.google.com/gp/v/save/${token}`;
   return saveUrl;
 };
-
-const saveUrl = generateSaveLink(passObjectData);
-console.log("Save to Google Wallet URL:", saveUrl);

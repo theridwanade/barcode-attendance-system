@@ -16,7 +16,7 @@ const useModal = () => {
         className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 transition-opacity duration-300 opacity-100"
         onClick={() => {close()}}
       >
-        <div className="max-w-[600px] w-full mx-5" onClick={(e) => e.stopPropagation()}>
+        <div className="max-w-[600px] w-full mx-5 max-h-[80vh] my-5 overflow-y-auto" onClick={(e) => e.stopPropagation()}>
           {children}
         </div>
       </div>

@@ -24,14 +24,13 @@ const getEventDetails = async (slug: string): Promise<EventDetails> => {
     _id: event?._id.toString(),
     title: event?.title,
     description: event?.description,
-    date: event?.date.toISOString().split("T")[0],
-    eventCreatedAt: event?.createdAt.toISOString().split("T")[0],
-    location: event?.location,
+    startDate: event?.date.start.toISOString().split("T")[0],
+    endDate: event?.date.end.toISOString().split("T")[0],
+    venue: {
+      name: event?.venue.name,
+      address: event?.venue.address,
+    },
     invitedContacts: event.invitedContacts.map(ic => ic.contact._id.toString()),
-    attendees:
-      event?.attendees?.map((a: any) =>
-        typeof a === "object" && a._id ? a._id.toString() : a,
-      ) ?? [],
   };
 };
 
@@ -81,10 +80,9 @@ const Page = async ({ params }: RouteParams) => {
         <div className="space-y-2">
           <h2 className="font-bold text-3xl">{event.title}</h2>
           <p className="text-lg">Description: {event.description}</p>
-          <p className="text-lg">Event Date: {event.date}</p>
-          <p className="text-lg">Event Created At: {event.eventCreatedAt}</p>
-          <p className="text-lg">Location: {event.location}</p>
-          <p className="text-lg">Attendees: {event.attendees?.length ?? 0}</p>
+          <p className="text-lg">Start Date: {event.startDate}</p>
+          <p className="text-lg">End Date: {event.endDate}</p>
+          <p className="text-lg">Venue: {event.venue?.name} - {event.venue?.address}</p>
           <p className="text-lg">
             Total Invite: {event.invitedContacts?.length ?? 0}
           </p>

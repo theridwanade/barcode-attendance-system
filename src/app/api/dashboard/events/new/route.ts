@@ -7,7 +7,7 @@ import { NextResponse } from "next/server"
 
 export const POST = async (req: Request)  => {
     const body = await req.json();
-    const {title, description, date, location } = body;
+    const {title, description, date, venue } = body;
       const { userId } = await auth();
     
       if (!userId) {
@@ -29,10 +29,17 @@ export const POST = async (req: Request)  => {
       }
 
       const newEvent = await Events.create({
+        admin: admin._id,
         title,
         description,
-        date,
-        location
+        date: {
+          start: new Date(date.start),
+          end: new Date(date.end)
+        },
+        venue: {
+          name: venue.name,
+          address: venue.address
+        }
       })
 
     return NextResponse.json({ message: "Event created successfully", id: newEvent._id }, { status: 201 });
