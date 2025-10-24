@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardAction,
@@ -33,9 +33,9 @@ const EventCard = ({
           Date: {new Date(date).toLocaleDateString()}
         </CardDescription>
         <CardAction>
-          <Button variant={"outline"} className={"cursor-pointer"}>
-            Record Attendance
-          </Button>
+          <Link href={`/events/${id}/record-attendance`} className={buttonVariants({ variant: "outline" })}>
+            Register Attendance
+          </Link>
         </CardAction>
       </CardHeader>
     </Card>

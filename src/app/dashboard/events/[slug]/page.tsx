@@ -90,9 +90,7 @@ const Page = async ({ params }: RouteParams) => {
             <Link href={`/events/${event._id}/record-attendance`} className={buttonVariants({ variant: "default" })}>
               Register Attendance
             </Link>
-            <Button>Assign an Admin</Button>
             <InviteAttendees eventDetails={event} />
-            <Button>Generate Report</Button>
           </div>
         </div>
         {/* Data table for attendance */}
