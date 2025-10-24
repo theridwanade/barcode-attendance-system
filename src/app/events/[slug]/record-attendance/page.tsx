@@ -67,6 +67,27 @@ const Page = ({ params }: RouteParams) => {
     }
   };
 
+  const recordAttendance = async (qrData: string) => {
+    try {
+      const response = await fetch(`/api/events/${slug}/record`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ qrData }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error recording attendance: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log("Attendance recorded:", data);
+    } catch (error) {
+      console.error("Error recording attendance:", error);
+    }
+  }
+
   // Attach video stream
   useEffect(() => {
     if (stream && videoRef.current) {
@@ -112,7 +133,7 @@ const Page = ({ params }: RouteParams) => {
       if (code) {
         setScanResult(code.data);
         beep();
-        console.log("✅ QR Detected:", code.data);
+        recordAttendance(code.data);
       }
     };
 

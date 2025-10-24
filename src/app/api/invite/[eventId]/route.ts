@@ -1,43 +1,54 @@
+import jwt from "jsonwebtoken";
+import { type NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/connectdb";
-import Events from "@/models/events.model";
-import Contacts from "@/models/contacts.model"; // ✅ Add this
-import { NextRequest, NextResponse } from "next/server";
-import { PassObjectEventTicketType } from "@/types/passTypes";
 import { generateSaveLink } from "@/lib/googlePass";
+import Contacts from "@/models/contacts.model"; // ✅ Add this
+import Events from "@/models/events.model";
+import type { PassObjectEventTicketType } from "@/types/passTypes";
 
-export const GET = async (req: NextRequest, { params }: { params: { eventId: string } }) => {
-    const { eventId } = await params;
-    const attendeeId = req.nextUrl.searchParams.get("attendee")!;
+export const GET = async (
+  req: NextRequest,
+  { params }: { params: { eventId: string } },
+) => {
+  const { eventId } = await params;
+  const attendeeId = req.nextUrl.searchParams.get("attendee")!;
 
-    await connectToDatabase();
+  await connectToDatabase();
 
-    const event = await Events.findById(eventId)
-        .populate("invitedContacts.contact")
-        .lean();
+  const event = await Events.findById(eventId)
+    .populate("invitedContacts.contact")
+    .lean();
 
-    if (!event) {
-        return NextResponse.json({ error: "Event not found" }, { status: 404 });
-    }
+  if (!event) {
+    return NextResponse.json({ error: "Event not found" }, { status: 404 });
+  }
 
-    const contactData = event.invitedContacts.find(
-        (c: any) => String(c.contact._id) === attendeeId
-    )
+  const contactData = event.invitedContacts.find(
+    (c: any) => String(c.contact._id) === attendeeId,
+  );
 
+  const classId = event.eventPassClassId!;
+  const objectId = contactData?.eventPassObjectId!;
+  const ticketToken = jwt.sign(
+    {
+      eventId: event._id,
+      attendeeId: contactData?.contact._id,
+    },
+    process.env.JWT_SECRET!,
+    { expiresIn: "30d" },
+  );
 
-    let classId = event.eventPassClassId!;
-    let objectId = contactData?.eventPassObjectId!;
+  const passObjectData: PassObjectEventTicketType = {
+    id: objectId,
+    classId: classId,
+    state: "ACTIVE",
+    barcode: {
+      type: "QR_CODE",
+      value: ticketToken,
+    },
+    ticketHolderName: contactData?.contact.name,
+  };
 
-    let passObjectData: PassObjectEventTicketType = {
-        id: objectId,
-        classId: classId,
-        state: "ACTIVE",
-        barcode: {
-            type: "QR_CODE",
-            value: objectId, // add jwt verification later
-        },
-        ticketHolderName: contactData?.contact.name,
-    }
-
-    const saveLink = await generateSaveLink(passObjectData);
-    return NextResponse.redirect(saveLink);
+  const saveLink = await generateSaveLink(passObjectData);
+  return NextResponse.redirect(saveLink);
 };
