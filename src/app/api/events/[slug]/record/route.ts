@@ -1,17 +1,18 @@
 import Events from '@/models/events.model';
 import jwt from 'jsonwebtoken';
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 
-export const POST = async (req: NextRequest) => {
+export const POST = async (req: NextRequest, { params }: { params: { slug: string } }) => {
     const body = await req.json();
     const { qrData } = body;
+    const { slug } = await params;
     const isValidQR = jwt.verify(qrData, process.env.JWT_SECRET!);
     if (!isValidQR) {
-        return new Response("Invalid QR code", { status: 400 });
+        return NextResponse.json({ error: "Invalid QR data" }, { status: 400 });
     }
-    const event = await Events.findById(isValidQR.eventId);
+    const event = await Events.findById(slug);
     if (!event) {
-        return new Response("Event not found", { status: 404 });
+        return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
     const invitedContact = event.invitedContacts.find(
         (c) => String(c.contact) === isValidQR.attendeeId,
@@ -19,7 +20,10 @@ export const POST = async (req: NextRequest) => {
     if (!invitedContact) {
         return new Response("Invited contact not found", { status: 404 });
     }
+    if (invitedContact.checkInTime) {
+        return NextResponse.json({ error: "Attendance already recorded" }, { status: 400 });
+    }
     invitedContact.checkInTime = new Date();
     await event.save();
-    return new Response("Attendance recorded", { status: 200 });
+    return NextResponse.json({ message: "Attendance recorded" }, { status: 200 });
 }

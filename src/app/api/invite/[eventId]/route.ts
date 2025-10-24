@@ -31,7 +31,6 @@ export const GET = async (
   const objectId = contactData?.eventPassObjectId!;
   const ticketToken = jwt.sign(
     {
-      eventId: event._id,
       attendeeId: contactData?.contact._id,
     },
     process.env.JWT_SECRET!,

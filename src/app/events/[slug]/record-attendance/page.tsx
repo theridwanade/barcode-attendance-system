@@ -1,13 +1,12 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import jsQR from "jsqr";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 
 interface RouteParams {
-  params: {
-    slug: string;
-  };
+  params: { slug: string };
 }
 
 const beep = (duration = 200, frequency = 440, volume = 0.5) => {
@@ -15,7 +14,7 @@ const beep = (duration = 200, frequency = 440, volume = 0.5) => {
   const oscillator = context.createOscillator();
   const gain = context.createGain();
 
-  oscillator.frequency.value = frequency; // Hz
+  oscillator.frequency.value = frequency;
   gain.gain.value = volume;
 
   oscillator.connect(gain);
@@ -25,18 +24,18 @@ const beep = (duration = 200, frequency = 440, volume = 0.5) => {
   oscillator.stop(context.currentTime + duration / 1000);
 };
 
-
-
 const Page = ({ params }: RouteParams) => {
-  const { slug } = params;
+  const { slug } = use(params);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
-  const [selectedDeviceId, setSelectedDeviceId] = useState<string>("");
-  const [scanResult, setScanResult] = useState<string>("");
+  const [selectedDeviceId, setSelectedDeviceId] = useState("");
+  const [scanResponse, setScanResponse] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // List all cameras
+  // 🎥 List all cameras
   const getCameras = async () => {
     try {
       await navigator.mediaDevices.getUserMedia({ video: true });
@@ -49,18 +48,14 @@ const Page = ({ params }: RouteParams) => {
     }
   };
 
+  // 🎞 Start stream
   const startStream = async () => {
     if (!selectedDeviceId) return alert("Select a camera first");
-
     try {
-      // stop old streams
-      // biome-ignore lint/suspicious/useIterableCallbackReturn: There is a lot of things i don't understand in linting
-            stream?.getTracks().forEach((t) => t.stop());
-
+      stream?.getTracks().forEach((t) => t.stop());
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { deviceId: { exact: selectedDeviceId } },
       });
-
       setStream(mediaStream);
     } catch (error) {
       console.error("Error accessing selected camera:", error);
@@ -68,47 +63,39 @@ const Page = ({ params }: RouteParams) => {
   };
 
   const recordAttendance = async (qrData: string) => {
+    if (loading) return;
+    setLoading(true);
     try {
       const response = await fetch(`/api/events/${slug}/record`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ qrData }),
       });
-
-      if (!response.ok) {
-        throw new Error(`Error recording attendance: ${response.statusText}`);
-      }
-
       const data = await response.json();
-      console.log("Attendance recorded:", data);
-    } catch (error) {
-      console.error("Error recording attendance:", error);
+      setScanResponse(data.message);
+    } catch (error: any) {
+      setScanResponse(error.message);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   // Attach video stream
   useEffect(() => {
-    if (stream && videoRef.current) {
-      videoRef.current.srcObject = stream;
-    }
+    if (stream && videoRef.current) videoRef.current.srcObject = stream;
   }, [stream]);
 
   // Stop stream on unmount
   useEffect(() => {
-    // biome-ignore lint/suspicious/useIterableCallbackReturn: There is a lot of things i don't understand in linting
     return () => stream?.getTracks().forEach((track) => track.stop());
   }, [stream]);
 
-  // Load camera list on mount
-  
-  // biome-ignore lint/correctness/useExhaustiveDependencies: I know i dont have a dependency
-      useEffect(() => {
+  // Load camera list
+  useEffect(() => {
     getCameras();
   }, []);
 
-  // 🧩 QR Scanning Loop
+  // 🔍 QR Scan Loop
   useEffect(() => {
     let scanInterval: number;
 
@@ -131,41 +118,52 @@ const Page = ({ params }: RouteParams) => {
       const imageData = ctx.getImageData(0, 0, w, h);
       const code = jsQR(imageData.data, w, h);
       if (code) {
-        setScanResult(code.data);
         beep();
         recordAttendance(code.data);
       }
     };
 
-    if (stream) {
-      scanInterval = window.setInterval(scan, 200); // scan every 200ms
-    }
+    if (stream) scanInterval = window.setInterval(scan, 200);
 
-    return () => {
-      if (scanInterval) clearInterval(scanInterval);
-    };
+    return () => clearInterval(scanInterval);
   }, [stream]);
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen max-w-[600px] w-full border bg-red-300 m-auto px-4">
-      <h1 className="text-2xl font-bold mb-4">Attendance for Devfest 2025</h1>
-      <p>Scan QR codes to record attendance</p>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-slate-900 via-slate-950 to-black text-white px-4 py-6">
+      <motion.h1
+        className="text-2xl md:text-3xl font-bold mb-2 text-center"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
+        Record attendance for your event
+      </motion.h1>
+      <p className="text-gray-400 mb-6 text-center text-sm">
+        Scan your QR code to mark attendance
+      </p>
 
-      <div className="relative w-[550px] h-[400px] overflow-hidden border rounded-lg mx-auto">
-        {/** biome-ignore lint/a11y/useMediaCaption: This is even worse, this ain't never ending */}
+      {/* Video Box */}
+      <div className="relative w-full max-w-[420px] aspect-[3/2] bg-black border border-gray-700 rounded-2xl overflow-hidden shadow-lg">
         <video
           ref={videoRef}
           autoPlay
           playsInline
+          muted
           className="absolute inset-0 w-full h-full object-cover"
         />
         <canvas ref={canvasRef} className="hidden" />
+
+        {!stream && (
+          <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm">
+            Camera not active
+          </div>
+        )}
       </div>
 
-      <div className="mt-4 flex flex-col space-y-2 w-full max-w-[550px]">
-        <div className="flex items-center justify-between">
+      {/* Controls */}
+      <div className="w-full max-w-[420px] mt-6 space-y-4">
+        <div className="flex flex-col sm:flex-row gap-3">
           <select
-            className="border rounded-md px-3 py-2 w-2/3"
+            className="flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
             value={selectedDeviceId}
             onChange={(e) => setSelectedDeviceId(e.target.value)}
           >
@@ -176,13 +174,22 @@ const Page = ({ params }: RouteParams) => {
             ))}
           </select>
 
-          <Button onClick={startStream}>Start Camera</Button>
+          <Button
+            onClick={startStream}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white w-full sm:w-auto"
+          >
+            Start Camera
+          </Button>
         </div>
 
-        {scanResult && (
-          <div className="mt-3 p-2 bg-white text-black rounded-md text-center">
-            <strong>QR Result:</strong> {scanResult}
-          </div>
+        {scanResponse && (
+          <motion.div
+            className="mt-3 text-center text-sm bg-slate-800 border border-slate-700 rounded-lg py-2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            {loading ? "Processing..." : scanResponse}
+          </motion.div>
         )}
       </div>
     </div>
