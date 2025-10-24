@@ -27,21 +27,21 @@ export const columns: ColumnDef<Attendance>[] = [
     accessorKey: "checkInTime",
     header: "Check-In Time",
   },
-//   {
-//     id: "actions",
-//     cell: ({ row }) => {
-//       const attendees = row.original;
+  //   {
+  //     id: "actions",
+  //     cell: ({ row }) => {
+  //       const attendees = row.original;
 
-//       return (
-//         <DropdownMenu>
-//           <DropdownMenuTrigger asChild>
-//             <Button variant="ghost" className="h-8 w-8 p-0">
-//               <span className="sr-only">Open menu</span>
-//               <MoreHorizontal className="h-4 w-4" />
-//             </Button>
-//           </DropdownMenuTrigger>
-//         </DropdownMenu>
-//       );
-//     },
-//   },
+  //       return (
+  //         <DropdownMenu>
+  //           <DropdownMenuTrigger asChild>
+  //             <Button variant="ghost" className="h-8 w-8 p-0">
+  //               <span className="sr-only">Open menu</span>
+  //               <MoreHorizontal className="h-4 w-4" />
+  //             </Button>
+  //           </DropdownMenuTrigger>
+  //         </DropdownMenu>
+  //       );
+  //     },
+  //   },
 ];

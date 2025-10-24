@@ -12,10 +12,7 @@ export const POST = async (req: Request) => {
   const { userId } = await auth();
 
   if (!userId) {
-    return NextResponse.json(
-      { error: "Unauthorized" },
-      { status: 401 },
-    );
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   await connectToDatabase();
@@ -23,10 +20,7 @@ export const POST = async (req: Request) => {
   const admin = await Admins.findOne({ clerkId: userId });
 
   if (!admin) {
-    return NextResponse.json(
-      { error: "Admin not found" },
-      { status: 404 },
-    );
+    return NextResponse.json({ error: "Admin not found" }, { status: 404 });
   }
 
   await Contacts.create({

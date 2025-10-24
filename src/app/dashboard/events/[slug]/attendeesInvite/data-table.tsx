@@ -33,7 +33,7 @@ interface DataTableProps<TData, TValue> {
 export const DataTable = <TData, TValue>({
   columns,
   data,
-    handleAttendeesInvite
+  handleAttendeesInvite,
 }: DataTableProps<TData, TValue>) => {
   const [rowSelection, setRowSelection] = useState({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -56,8 +56,10 @@ export const DataTable = <TData, TValue>({
     },
     enableRowSelection: true,
   });
-    const selectedRows = table.getSelectedRowModel().rows.map((row) => row.original);
-    const [loading, setLoading] = useState(false);
+  const selectedRows = table
+    .getSelectedRowModel()
+    .rows.map((row) => row.original);
+  const [loading, setLoading] = useState(false);
   return (
     <div>
       <div className="flex items-center py-4 gap-x-5">
@@ -69,21 +71,17 @@ export const DataTable = <TData, TValue>({
           }
           className=""
         />
-              <Button
-                  onClick={() => {
-                    setLoading(true)
-                    handleAttendeesInvite(selectedRows)
-                    router.refresh();
-                    setLoading(false)
-                  }}
-                  disabled={loading || selectedRows.length === 0}
-              >
-                  {loading ? (
-                      <Spinner />
-                  ) : (
-                      `Invite ${selectedRows.length} attendee(s)`
-                  )}
-              </Button>
+        <Button
+          onClick={() => {
+            setLoading(true);
+            handleAttendeesInvite(selectedRows);
+            router.refresh();
+            setLoading(false);
+          }}
+          disabled={loading || selectedRows.length === 0}
+        >
+          {loading ? <Spinner /> : `Invite ${selectedRows.length} attendee(s)`}
+        </Button>
       </div>
       <div className="overflow-hidden rounded-md border">
         <Table>

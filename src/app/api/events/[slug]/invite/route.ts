@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { connectToDatabase } from "@/lib/connectdb";
 import Events from "@/models/events.model";
 import Contacts from "@/models/contacts.model"; // assuming you have this model
-import { PassClassEventTicketType } from "@/types/passTypes";
+import type { PassClassEventTicketType } from "@/types/passTypes";
 import { createClass } from "@/lib/googlePass";
 import { sendInvitationEmail } from "@/lib/sendMail";
 
@@ -102,8 +102,15 @@ const generatePassClassId = async (event: any) => {
       defaultValue: { language: "en-US", value: event.title },
     },
     venue: {
-      name: { defaultValue: { language: "en-US", value: event.venue?.name || "Venue not specified" } },
-      address: { defaultValue: { language: "en-US", value: event.venue?.address || "" } },
+      name: {
+        defaultValue: {
+          language: "en-US",
+          value: event.venue?.name || "Venue not specified",
+        },
+      },
+      address: {
+        defaultValue: { language: "en-US", value: event.venue?.address || "" },
+      },
     },
     dateTime: {
       start: event.date?.start?.toISOString(),
@@ -115,7 +122,6 @@ const generatePassClassId = async (event: any) => {
 
   return await createClass(passClassData);
 };
-
 
 // const sendInvitations = async (event: any, attendees: string[]) => {
 //   const issuerId = String(process.env.GOOGLE_PASS_ISSUER_ID);

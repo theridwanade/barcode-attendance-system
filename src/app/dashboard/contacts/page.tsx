@@ -5,7 +5,6 @@ import AddContacts from "./addContacts";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 
-
 const Page = () => {
   const [contacts, setContacts] = useState([]);
 

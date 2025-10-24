@@ -16,11 +16,7 @@ export interface EventCardProps {
   location: string;
 }
 
-const EventCard = ({
-  id,
-  title,
-  date,
-}: EventCardProps) => {
+const EventCard = ({ id, title, date }: EventCardProps) => {
   return (
     <Card>
       <CardHeader>
@@ -33,7 +29,10 @@ const EventCard = ({
           Date: {new Date(date).toLocaleDateString()}
         </CardDescription>
         <CardAction>
-          <Link href={`/events/${id}/record-attendance`} className={buttonVariants({ variant: "outline" })}>
+          <Link
+            href={`/events/${id}/record-attendance`}
+            className={buttonVariants({ variant: "outline" })}
+          >
             Register Attendance
           </Link>
         </CardAction>

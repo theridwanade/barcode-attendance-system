@@ -10,20 +10,14 @@ export const GET = async (req: Request) => {
   const { userId } = await auth();
 
   if (!userId) {
-    return NextResponse.json(
-      { error: "Unauthorized" },
-      { status: 401 },
-    );
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   await connectToDatabase();
 
   const admin = await Admins.findOne({ clerkId: userId });
 
   if (!admin) {
-    return NextResponse.json(
-      { error: "Admin not found" },
-      { status: 404 },
-    );
+    return NextResponse.json({ error: "Admin not found" }, { status: 404 });
   }
   const eventsRecords = await Events.find({ admin: admin._id });
   const events = eventsRecords.map((event) => {

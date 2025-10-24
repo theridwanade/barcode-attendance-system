@@ -49,7 +49,7 @@ const CreateEvents = ({ onAdded }: { onAdded: () => void }) => {
   });
 
   const [datePickerOpen, setDatePickerOpen] = useState<"start" | "end" | null>(
-    null
+    null,
   );
   const router = useRouter();
 
