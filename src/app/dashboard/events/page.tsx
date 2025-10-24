@@ -33,10 +33,16 @@ const Page = () => {
           <CreateEvents onAdded={fetchEvents} />
         </div>
         <div className="p-5 grid gap-5">
-          {events.length === 0 ? <div className={"text-center items-center my-5"}>No events found</div> : events.map((event: EventCardProps, index) => (
-            // biome-ignore lint/suspicious/noArrayIndexKey: i don't know the fuck happening here, might figure it out later.
-            <EventCard key={index} {...event} />
-          ))}
+          {events.length === 0 ? (
+            <div className={"text-center items-center my-5"}>
+              No events found
+            </div>
+          ) : (
+            events.map((event: EventCardProps, index) => (
+              // biome-ignore lint/suspicious/noArrayIndexKey: i don't know the fuck happening here, might figure it out later.
+              <EventCard key={index} {...event} />
+            ))
+          )}
         </div>
       </main>
     </>

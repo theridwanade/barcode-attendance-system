@@ -30,7 +30,9 @@ const getEventDetails = async (slug: string): Promise<EventDetails> => {
       name: event?.venue.name,
       address: event?.venue.address,
     },
-    invitedContacts: event.invitedContacts.map(ic => ic.contact._id.toString()),
+    invitedContacts: event.invitedContacts.map((ic) =>
+      ic.contact._id.toString(),
+    ),
   };
 };
 
@@ -47,7 +49,7 @@ const getAttendeesData = async (slug: string) => {
   if (!event) return [];
 
   const contacts = event.invitedContacts
-    .map(ic => {
+    .map((ic) => {
       if (!ic.contact) return null; // skip invalid references
       return {
         id: ic.contact._id.toString(),
@@ -82,12 +84,17 @@ const Page = async ({ params }: RouteParams) => {
           <p className="text-lg">Description: {event.description}</p>
           <p className="text-lg">Start Date: {event.startDate}</p>
           <p className="text-lg">End Date: {event.endDate}</p>
-          <p className="text-lg">Venue: {event.venue?.name} - {event.venue?.address}</p>
+          <p className="text-lg">
+            Venue: {event.venue?.name} - {event.venue?.address}
+          </p>
           <p className="text-lg">
             Total Invite: {event.invitedContacts?.length ?? 0}
           </p>
           <div className="flex gap-4 mt-4">
-            <Link href={`/events/${event._id}/record-attendance`} className={buttonVariants({ variant: "default" })}>
+            <Link
+              href={`/events/${event._id}/record-attendance`}
+              className={buttonVariants({ variant: "default" })}
+            >
               Register Attendance
             </Link>
             <InviteAttendees eventDetails={event} />

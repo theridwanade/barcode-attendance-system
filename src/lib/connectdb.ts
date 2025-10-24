@@ -26,7 +26,7 @@ if (!globalForMongoose.mongooseCache) {
 }
 
 export const connectToDatabase = async () => {
-    const cache = globalForMongoose.mongooseCache;
+  const cache = globalForMongoose.mongooseCache;
   if (cache.conn) {
     console.log("Using cached mongodb connection");
     return cache.conn;
@@ -36,7 +36,7 @@ export const connectToDatabase = async () => {
     cache.promise = mongoose.connect(MONGODB_URI).then((m) => m);
     console.log("Connecting to mongodb");
   }
-    cache.conn = await cache.promise;
-    
+  cache.conn = await cache.promise;
+
   return cache.conn;
 };

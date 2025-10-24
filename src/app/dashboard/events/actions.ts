@@ -23,7 +23,8 @@ export const getContactsData = async (alreadyInvitedContactsId: string[]) => {
 
   const formattedContacts = contacts
     .filter(
-      (contact: any) => !alreadyInvitedContactsId.includes(contact._id?.toString())
+      (contact: any) =>
+        !alreadyInvitedContactsId.includes(contact._id?.toString()),
     )
     .map((contact: any) => ({
       id: contact._id?.toString(),

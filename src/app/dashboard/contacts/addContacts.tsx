@@ -19,7 +19,7 @@ import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
 import useModal from "@/hooks/useModal";
 
-const AddContacts = ({onAdded}: {onAdded: () => void}) => {
+const AddContacts = ({ onAdded }: { onAdded: () => void }) => {
   const { open, close, Modal } = useModal();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -31,22 +31,18 @@ const AddContacts = ({onAdded}: {onAdded: () => void}) => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-
       setLoading(true);
-    const response = await fetch("/api/dashboard/contacts/new", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
-    const data = await response.json();
-
-
-    
-  } catch (err) {
-    console.error("Failed to add contact:", err);
-  } finally {
+      const response = await fetch("/api/dashboard/contacts/new", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await response.json();
+    } catch (err) {
+      console.error("Failed to add contact:", err);
+    } finally {
       onAdded();
       setLoading(false);
       close();
@@ -113,7 +109,11 @@ const AddContacts = ({onAdded}: {onAdded: () => void}) => {
                     />
                   </Field>
                   <Field>
-                    <Button type="submit" onClick={handleSubmit} disabled={loading}>
+                    <Button
+                      type="submit"
+                      onClick={handleSubmit}
+                      disabled={loading}
+                    >
                       {loading ? <Spinner /> : "Save"}
                     </Button>
                   </Field>

@@ -12,7 +12,11 @@ const GoogleLogin = () => {
     });
   };
   return (
-    <Button variant="outline" className="w-full cursor-pointer" onClick={handleGoogleLogin}>
+    <Button
+      variant="outline"
+      className="w-full cursor-pointer"
+      onClick={handleGoogleLogin}
+    >
       Login with Google
     </Button>
   );

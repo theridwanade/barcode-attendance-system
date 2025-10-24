@@ -42,7 +42,8 @@ const Page = ({ params }: RouteParams) => {
       const allDevices = await navigator.mediaDevices.enumerateDevices();
       const videoDevices = allDevices.filter((d) => d.kind === "videoinput");
       setDevices(videoDevices);
-      if (videoDevices.length > 0) setSelectedDeviceId(videoDevices[0].deviceId);
+      if (videoDevices.length > 0)
+        setSelectedDeviceId(videoDevices[0].deviceId);
     } catch (err) {
       console.error("Could not list cameras:", err);
     }

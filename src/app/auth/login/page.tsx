@@ -39,12 +39,13 @@ const LoginPage = () => {
       setVerifying(true);
       await signIn.create({
         identifier: formData.email,
-        password: formData.password,zz
+        password: formData.password,
+        zz,
       });
       setVerifying(false);
       if (signIn.status === "complete") {
         router.push("/");
-      } 
+      }
     } catch (error) {
       console.error("Error signing in:", error);
     } finally {
@@ -109,8 +110,12 @@ const LoginPage = () => {
           </form>
         </CardContent>
         <CardFooter className="flex-col gap-2">
-          <Button type="submit" onClick={handleSubmit} className="w-full cursor-pointer">
-            {verifying ? (<Spinner />) : "Login"}
+          <Button
+            type="submit"
+            onClick={handleSubmit}
+            className="w-full cursor-pointer"
+          >
+            {verifying ? <Spinner /> : "Login"}
           </Button>
           <GoogleLogin />
         </CardFooter>
